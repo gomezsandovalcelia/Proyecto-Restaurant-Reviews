@@ -51,6 +51,12 @@ function Navbar() {
                 Crear reseña
               </Link>
             </li>
+            
+            <li className="nav-item">
+              <Link className={linkClass("/explore")} to="/explore">
+                Explorar
+              </Link>
+            </li>
 
             <li className="nav-item">
               <Link className={linkClass("/profile")} to="/profile">

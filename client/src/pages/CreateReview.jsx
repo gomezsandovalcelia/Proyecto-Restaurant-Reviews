@@ -2,12 +2,14 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { createReview } from "../services/reviews";
+import spanishCities from "../data/spanishCities";
 
 function CreateReview() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     restaurantName: "",
+    city: "",
     location: "",
     rating: "",
     dish: "",
@@ -28,9 +30,9 @@ function CreateReview() {
     e.preventDefault();
     setError("");
 
-    const { restaurantName, location, rating, dish } = formData;
+    const { restaurantName, city, location, rating, dish } = formData;
 
-    if (!restaurantName || !location || !rating || !dish) {
+    if (!restaurantName || !city || !location || !rating || !dish) {
       setError("Todos los campos son obligatorios");
       return;
     }
@@ -38,6 +40,7 @@ function CreateReview() {
     try {
       await createReview({
         restaurantName,
+        city,
         location,
         rating,
         dish,
@@ -78,6 +81,26 @@ function CreateReview() {
                     value={formData.restaurantName}
                     onChange={handleChange}
                   />
+                </div>
+
+                <div className="mb-3">
+                  <label htmlFor="city" className="form-label">
+                    Ciudad
+                  </label>
+                  <select
+                    id="city"
+                    name="city"
+                    className="form-select themed-input"
+                    value={formData.city}
+                    onChange={handleChange}
+                  >
+                    <option value="">Selecciona una ciudad</option>
+                    {spanishCities.map((city) => (
+                      <option key={city} value={city}>
+                        {city}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 <div className="mb-3">

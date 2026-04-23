@@ -85,16 +85,34 @@ export async function crearReview(review) {
 }
 
 /**
- * Devuelve las reseñas de un usuario.
+ * Devuelve las reseñas del usuario autenticado paginadas.
  *
  * @param {string} userId - Id del usuario autenticado
- * @returns {Promise<Array>} Lista de reseñas del usuario
+ * @param {number} page - Página actual
+ * @param {number} limit - Número de reseñas por página
+ * @returns {Promise<Object>} Reseñas y datos de paginación
  */
-export async function leerReviewsPorUsuario(userId) {
+export async function leerReviewsPorUsuario(userId, page = 1, limit = 9) {
   const conexion = await conectar();
   const coleccion = conexion.db("restaurant_reviews").collection("reviews");
 
-  return await coleccion.find({ user: userId }).toArray();
+  const filtro = { user: userId };
+
+  const total = await coleccion.countDocuments(filtro);
+
+  const reviews = await coleccion
+    .find(filtro)
+    .sort({ createdAt: -1 })
+    .skip((page - 1) * limit)
+    .limit(limit)
+    .toArray();
+
+  return {
+    reviews,
+    total,
+    currentPage: page,
+    totalPages: Math.ceil(total / limit),
+  };
 }
 
 /**
@@ -171,4 +189,71 @@ export async function buscarUsuarioPorId(userId) {
   });
 }
 
+/**
+ * Actualiza los datos del usuario autenticado.
+ *
+ * @param {string} userId - Id del usuario autenticado
+ * @param {Object} updatedData - Nuevos datos del usuario
+ * @returns {Promise<Object>} Información sobre si existía y si cambió
+ */
+export async function actualizarUsuario(userId, updatedData) {
+  const conexion = await conectar();
+  const coleccion = conexion.db("restaurant_reviews").collection("usuarios");
 
+  const resultado = await coleccion.updateOne(
+    { _id: new ObjectId(userId) },
+    { $set: updatedData }
+  );
+
+  return {
+    existe: resultado.matchedCount,
+    cambio: resultado.modifiedCount,
+  };
+}
+/**
+ * Actualiza la contraseña del usuario autenticado.
+ *
+ * @param {string} userId - Id del usuario autenticado
+ * @param {string} passwordHash - Nueva contraseña encriptada
+ * @returns {Promise<Object>} Información sobre si existía y si cambió
+ */
+export async function actualizarPasswordUsuario(userId, passwordHash) {
+  const conexion = await conectar();
+  const coleccion = conexion.db("restaurant_reviews").collection("usuarios");
+
+  const resultado = await coleccion.updateOne(
+    { _id: new ObjectId(userId) },
+    { $set: { password: passwordHash } }
+  );
+
+  return {
+    existe: resultado.matchedCount,
+    cambio: resultado.modifiedCount,
+  };
+}
+
+/**
+ * Devuelve reseñas destacadas de otros usuarios para la sección Explorar.
+ *
+ * @param {string} userId - Id del usuario autenticado
+ * @param {string} city - Ciudad por la que filtrar (opcional)
+ * @returns {Promise<Array>} Lista de reseñas destacadas
+ */
+export async function leerReviewsExplorar(userId, city = "") {
+  const conexion = await conectar();
+  const coleccion = conexion.db("restaurant_reviews").collection("reviews");
+
+  const filtro = {
+    user: { $ne: userId },
+  };
+
+  if (city && city.trim()) {
+    filtro.city = city;
+  }
+
+  return await coleccion
+    .find(filtro)
+    .sort({ rating: -1, createdAt: -1 })
+    .limit(9)
+    .toArray();
+}

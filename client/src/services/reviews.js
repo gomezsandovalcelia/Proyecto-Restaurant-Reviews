@@ -28,14 +28,15 @@ export async function createReview(reviewData) {
 }
 
 /**
- * Devuelve las reseñas del usuario autenticado.
+ * Devuelve las reseñas del usuario autenticado paginadas.
  *
- * @returns {Promise<Array>} Lista de reseñas
+ * @param {number} page - Página actual
+ * @returns {Promise<Object>} Reseñas y datos de paginación
  */
-export async function getUserReviews() {
+export async function getUserReviews(page = 1) {
   const token = localStorage.getItem("token");
 
-  const response = await fetch(`${API_URL}/reviews`, {
+  const response = await fetch(`${API_URL}/reviews?page=${page}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -126,6 +127,32 @@ export async function getReviewById(reviewId) {
 
   if (!response.ok) {
     throw new Error(data.error || "Error al obtener la reseña");
+  }
+
+  return data;
+}
+
+/**
+ * Obtiene reseñas destacadas de otros usuarios para explorar.
+ *
+ * @param {string} city - Ciudad por la que filtrar (opcional)
+ * @returns {Promise<Array>} Lista de reseñas
+ */
+export async function getExploreReviews(city = "") {
+  const token = localStorage.getItem("token");
+
+  const query = city ? `?city=${encodeURIComponent(city)}` : "";
+
+  const response = await fetch(`${API_URL}/explore${query}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || "Error al obtener las reseñas de explorar");
   }
 
   return data;

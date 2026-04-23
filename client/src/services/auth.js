@@ -89,3 +89,57 @@ export async function getProfile() {
 
   return data;
 }
+
+/**
+ * Actualiza los datos del perfil del usuario autenticado.
+ *
+ * @param {Object} profileData - Nuevos datos del perfil
+ * @returns {Promise<Object>} Respuesta del servidor
+ */
+export async function updateProfile(profileData) {
+  const token = localStorage.getItem("token");
+
+  const response = await fetch(`${API_URL}/profile`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(profileData),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || "Error al actualizar el perfil");
+  }
+
+  return data;
+}
+
+/**
+ * Cambia la contraseña del usuario autenticado.
+ *
+ * @param {Object} passwordData - Datos para el cambio de contraseña
+ * @returns {Promise<Object>} Respuesta del servidor
+ */
+export async function updatePassword(passwordData) {
+  const token = localStorage.getItem("token");
+
+  const response = await fetch(`${API_URL}/profile/password`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(passwordData),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || "Error al cambiar la contraseña");
+  }
+
+  return data;
+}
