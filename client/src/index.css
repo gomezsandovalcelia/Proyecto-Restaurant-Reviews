@@ -1,0 +1,312 @@
+:root {
+  --color-1: #963542;
+  --color-2: #F9DAD8;
+  --color-3: #E9ABAE;
+  --color-4: #F4C3C6;
+  --color-5: #D78289;
+  --color-6: #C65C6A;
+  --color-7: #f5e8e7;
+  --text-dark: #2c2c2c;
+  --white: #ffffff;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background-color: var(--color-2);
+  color: var(--text-dark);
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Imagen lateral */
+.home-image {
+  width: 100%;
+  height: 100%;
+  background-image: url("/images/toast-dinner.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Auth */
+.auth-page {
+  background: linear-gradient(135deg, var(--color-2), var(--color-4));
+}
+
+.auth-side {
+  background-color: transparent;
+}
+
+.auth-card {
+  border-radius: 22px;
+  background-color: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(4px);
+}
+
+.auth-logo {
+  width: 100%;
+  max-width: 260px;
+  height: auto;
+}
+
+.auth-subtitle {
+  color: var(--color-1);
+  font-weight: 500;
+}
+
+.auth-label {
+  color: var(--color-1);
+  font-weight: 600;
+}
+
+.themed-input {
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--color-3);
+  background-color: var(--white);
+}
+
+.themed-input:focus {
+  border-color: var(--color-6);
+  box-shadow: 0 0 0 0.15rem rgba(198, 92, 106, 0.2);
+}
+
+/* Botones */
+.primary-btn {
+  background-color: var(--color-1);
+  color: var(--white);
+  border: none;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.primary-btn:hover {
+  background-color: var(--color-6);
+  color: var(--white);
+}
+
+.secondary-btn {
+  background-color: transparent;
+  color: var(--color-1);
+  border: 1px solid var(--color-1);
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.secondary-btn:hover {
+  background-color: var(--color-1);
+  color: var(--white);
+}
+
+/* Navbar */
+.app-navbar {
+  background-color: rgba(255, 255, 255, 0.9);
+  border-bottom: 1px solid var(--color-3);
+  padding: 2.25em;
+}
+
+.app-navbar .container {
+  display: flex;
+  align-items: center;
+}
+
+.brand-custom {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.brand-logo {
+  height: 45px;
+  width: auto;
+  display: block;
+}
+
+.nav-link-custom {
+  color: var(--color-1) !important;
+  font-weight: 600;
+  border-radius: 10px;
+  padding: 0.5rem 0.85rem !important;
+  transition: 0.2s ease;
+}
+
+.nav-link-custom:hover {
+  background-color: var(--color-2);
+  color: var(--color-6) !important;
+}
+
+.nav-link-custom.active {
+  background-color: var(--color-1);
+  color: var(--white) !important;
+}
+
+.logout-btn {
+  background-color: transparent;
+  color: var(--color-1);
+  border: 1px solid var(--color-1);
+  border-radius: 10px;
+  padding: 0.45rem 0.85rem;
+  font-weight: 600;
+}
+
+.logout-btn:hover {
+  background-color: var(--color-1);
+  color: var(--white);
+}
+
+
+@media (max-width: 991.98px) {
+  .navbar-collapse-custom {
+    background-color: var(--white);
+    border: 1px solid var(--color-3);
+    border-radius: 16px;
+    padding: 1rem;
+    box-shadow: 0 8px 24px rgba(150, 53, 66, 0.08);
+    margin-top: 10px;
+  }
+
+  .nav-list-custom {
+    gap: 0.35rem;
+  }
+
+  .nav-list-custom .nav-item {
+    width: 100%;
+  }
+
+  .nav-link-custom {
+    display: block;
+    width: 100%;
+  }
+
+  .logout-btn {
+    width: 100%;
+    margin-top: 0.75rem;
+  }
+  
+  .brand-logo {
+    height: 35px;
+    width: auto;
+    display: block;
+  }
+}
+
+/* General */
+.form-control {
+  padding: 0.75rem 1rem;
+}
+
+.card {
+  border-radius: 16px;
+}
+
+.btn {
+  border-radius: 10px;
+}
+
+/* Home reseñas */
+.empty-state-card {
+  max-width: 700px;
+  margin: 0 auto;
+  background-color: var(--white);
+}
+
+.sort-btn {
+  padding: 0.25rem 0.6rem;
+  font-size: 0.85rem;
+  border-radius: 8px;
+}
+
+.custom-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(150, 53, 66, 0.35);
+  z-index: 1040;
+}
+
+.custom-modal-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+  padding: 1rem;
+}
+
+.custom-modal-card {
+  width: 100%;
+  max-width: 420px;
+  border-radius: 16px;
+}
+/* Para el home*/
+.userhome-page {
+  background: var(--color-7);
+}
+.userhome-title {
+  color: var(--color-1);
+}
+
+.userhome-subtitle {
+  color: var(--color-1);
+}
+
+.review-card-title {
+  color: var(--color-1);
+  font-weight: 700;
+}
+
+
+.review-card-location {
+  color: var(--color-6);
+}
+
+.review-card-text {
+  color: var(--text-dark);
+}
+
+.delete-btn {
+  background-color: var(--color-1);
+  color: var(--white);
+  border: 1px solid var(--color-1);
+  font-weight: 600;
+}
+
+.delete-btn:hover {
+  background-color: var(--color-6);
+  color: var(--white);
+}
+
+.page-panel-card {
+  border: 1px solid var(--color-4);
+  box-shadow: 0 10px 24px rgba(150, 53, 66, 0.12);
+}
+
+.page-panel-card .form-label {
+  color: var(--color-1);
+  font-weight: 600;
+}
+
+.profile-value {
+  background-color: var(--white);
+  border: 1px solid var(--color-3);
+  border-radius: 12px;
+  padding: 0.8rem 1rem;
+  color: var(--text-dark);
+}
+
+.page-panel-wrapper {
+  max-width: 800px;
+  margin: 0 auto;
+}
