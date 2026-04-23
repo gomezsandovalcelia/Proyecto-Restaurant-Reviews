@@ -19,6 +19,8 @@ import CreateReview from "./pages/CreateReview";
 import EditReview from "./pages/EditReview";
 import Profile from "./pages/Profile";
 import PrivateRoute from "./components/PrivateRoute";
+import EditProfile from "./pages/EditProfile";
+import Explore from "./pages/Explore";
 
 function App() {
   return (
@@ -58,6 +60,24 @@ function App() {
         element={
           <PrivateRoute>
             <Profile />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/edit-profile"
+        element={
+          <PrivateRoute>
+            <EditProfile />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/explore"
+        element={
+          <PrivateRoute>
+            <Explore />
           </PrivateRoute>
         }
       />

@@ -159,7 +159,9 @@ body {
   background-color: var(--color-1);
   color: var(--white);
 }
-
+.nav-item {
+  margin-right: 10px;
+}
 
 @media (max-width: 991.98px) {
   .navbar-collapse-custom {
@@ -309,4 +311,22 @@ body {
 .page-panel-wrapper {
   max-width: 800px;
   margin: 0 auto;
+}
+
+.form-select.themed-input {
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--color-3);
+  background-color: var(--white);
+}
+
+.form-select.themed-input:focus {
+  border-color: var(--color-6);
+  box-shadow: 0 0 0 0.15rem rgba(198, 92, 106, 0.2);
+}
+
+.pagination-info {
+  color: var(--color-1);
+  font-weight: 600;
+  padding: 0.5rem 0.75rem;
 }

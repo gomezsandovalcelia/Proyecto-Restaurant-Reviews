@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { getReviewById, updateReview } from "../services/reviews";
+import spanishCities from "../data/spanishCities";
 
 function EditReview() {
   const { id } = useParams();
@@ -9,6 +10,7 @@ function EditReview() {
 
   const [formData, setFormData] = useState({
     restaurantName: "",
+    city: "",
     location: "",
     rating: "",
     dish: "",
@@ -24,6 +26,7 @@ function EditReview() {
 
         setFormData({
           restaurantName: review.restaurantName || "",
+          city: review.city || "",
           location: review.location || "",
           rating: review.rating || "",
           dish: review.dish || "",
@@ -51,9 +54,9 @@ function EditReview() {
     e.preventDefault();
     setError("");
 
-    const { restaurantName, location, rating, dish } = formData;
+    const { restaurantName, city, location, rating, dish } = formData;
 
-    if (!restaurantName || !location || !rating || !dish) {
+    if (!restaurantName || !city || !location || !rating || !dish) {
       setError("Todos los campos son obligatorios");
       return;
     }
@@ -61,6 +64,7 @@ function EditReview() {
     try {
       await updateReview(id, {
         restaurantName,
+        city,
         location,
         rating,
         dish,
@@ -105,6 +109,26 @@ function EditReview() {
                       value={formData.restaurantName}
                       onChange={handleChange}
                     />
+                  </div>
+
+                  <div className="mb-3">
+                    <label htmlFor="city" className="form-label">
+                      Ciudad
+                    </label>
+                    <select
+                      id="city"
+                      name="city"
+                      className="form-select themed-input"
+                      value={formData.city}
+                      onChange={handleChange}
+                    >
+                      <option value="">Selecciona una ciudad</option>
+                      {spanishCities.map((city) => (
+                        <option key={city} value={city}>
+                          {city}
+                        </option>
+                      ))}
+                    </select>
                   </div>
 
                   <div className="mb-3">

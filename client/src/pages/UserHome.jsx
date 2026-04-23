@@ -10,11 +10,16 @@ function UserHome() {
   const [reviewToDelete, setReviewToDelete] = useState(null);
   const [sortType, setSortType] = useState("date");
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+
   useEffect(() => {
     async function cargarReviews() {
       try {
-        const data = await getUserReviews();
-        setReviews(data);
+        setLoading(true);
+        const data = await getUserReviews(currentPage);
+        setReviews(data.reviews);
+        setTotalPages(data.totalPages);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -23,7 +28,7 @@ function UserHome() {
     }
 
     cargarReviews();
-  }, []);
+  }, [currentPage]);
 
   function openDeleteModal(review) {
     setReviewToDelete(review);
@@ -39,9 +44,13 @@ function UserHome() {
     try {
       await deleteReview(reviewToDelete._id);
 
-      setReviews((prevReviews) =>
-        prevReviews.filter((review) => review._id !== reviewToDelete._id)
-      );
+      const data = await getUserReviews(currentPage);
+      setReviews(data.reviews);
+      setTotalPages(data.totalPages);
+
+      if (data.reviews.length === 0 && currentPage > 1) {
+        setCurrentPage((prev) => prev - 1);
+      }
 
       closeDeleteModal();
     } catch (err) {
@@ -115,16 +124,25 @@ function UserHome() {
               </button>
             </div>
 
-            <div className="row g-4">
+            <div className="row g-4 mb-4">
               {sortedReviews.map((review) => (
                 <div key={review._id} className="col-12 col-md-6 col-lg-4">
                   <div className="card border-0 shadow-sm h-100 review-card">
                     <div className="card-body d-flex flex-column">
                       <h3 className="h5 review-card-title">{review.restaurantName}</h3>
-                      <p className="review-card-location mb-2">{review.location}</p>
+
+                      <p className="review-card-location mb-1">
+                        <strong>Ciudad:</strong> {review.city || "Sin ciudad"}
+                      </p>
+
+                      <p className="mb-2 review-card-text">
+                        <strong>Ubicación:</strong> {review.location}
+                      </p>
+
                       <p className="mb-2 review-card-text">
                         <strong>Nota:</strong> {review.rating}/10
                       </p>
+
                       <p className="mb-4 review-card-text">
                         <strong>Plato recomendado:</strong> {review.dish}
                       </p>
@@ -149,6 +167,30 @@ function UserHome() {
                 </div>
               ))}
             </div>
+
+            {totalPages > 1 && (
+              <div className="d-flex justify-content-center align-items-center gap-2 flex-wrap">
+                <button
+                  className="btn secondary-btn"
+                  onClick={() => setCurrentPage((prev) => prev - 1)}
+                  disabled={currentPage === 1}
+                >
+                  Anterior
+                </button>
+
+                <span className="pagination-info">
+                  Página {currentPage} de {totalPages}
+                </span>
+
+                <button
+                  className="btn secondary-btn"
+                  onClick={() => setCurrentPage((prev) => prev + 1)}
+                  disabled={currentPage === totalPages}
+                >
+                  Siguiente
+                </button>
+              </div>
+            )}
           </>
         )}
       </main>

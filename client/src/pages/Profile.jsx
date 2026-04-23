@@ -1,8 +1,12 @@
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import { getProfile } from "../services/auth";
+import { useNavigate } from "react-router-dom";
+
 
 function Profile() {
+  const navigate = useNavigate();
+
   const [profile, setProfile] = useState({
     username: "",
     email: "",
@@ -58,6 +62,14 @@ function Profile() {
                     <label className="form-label">Email</label>
                     <div className="profile-value">{profile.email}</div>
                   </div>
+                  <div className="mt-4">
+                  <button
+                    className="btn primary-btn"
+                    onClick={() => navigate("/edit-profile")}
+                  >
+                    Editar perfil
+                  </button>
+                </div>
                 </>
               )}
             </div>

@@ -36,8 +36,11 @@ import {
   crearReview,
   leerReviewsPorUsuario,
   leerReviewPorId,
+  leerReviewsExplorar,
   borrarReview,
   actualizarReview,
+  actualizarUsuario,
+  actualizarPasswordUsuario,
 } from "./db.js";
 
 const servidor = express();
@@ -195,14 +198,15 @@ servidor.get("/profile", verificarToken, async (peticion, respuesta) => {
  */
 servidor.post("/reviews", verificarToken, async (peticion, respuesta) => {
   try {
-    const { restaurantName, location, rating, dish } = peticion.body;
+    const { restaurantName, city, location, rating, dish } = peticion.body;
 
-    if (!restaurantName || !restaurantName.trim() || !location || !location.trim() || rating === undefined || !dish || !dish.trim()) {
+    if (!restaurantName || !restaurantName.trim() || !city || !city.trim() || !location || !location.trim() || rating === undefined || !dish || !dish.trim()) {
       return respuesta.status(400).json({error: "Todos los campos son obligatorios", });
     }
 
     const review = {
       restaurantName,
+      city,
       location,
       rating: Number(rating),
       dish,
@@ -229,11 +233,19 @@ servidor.post("/reviews", verificarToken, async (peticion, respuesta) => {
  * Endpoint para obtener las reseñas del usuario autenticado.
  *
  * Requiere token.
+ * Devuelve las reseñas paginadas.
  */
 servidor.get("/reviews", verificarToken, async (peticion, respuesta) => {
   try {
-    const reviews = await leerReviewsPorUsuario(String(peticion.usuario.id));
-    respuesta.json(reviews);
+    const page = Number(peticion.query.page) || 1;
+
+    const resultado = await leerReviewsPorUsuario(
+      String(peticion.usuario.id),
+      page,
+      9
+    );
+
+    respuesta.json(resultado);
   } catch (error) {
     console.error(error);
     respuesta.status(500).json({
@@ -279,11 +291,13 @@ servidor.delete("/reviews/:id", verificarToken, async (peticion, respuesta) => {
  */
 servidor.patch("/reviews/:id", verificarToken, async (peticion, respuesta) => {
   try {
-    const { restaurantName, location, rating, dish } = peticion.body;
+    const { restaurantName, city, location, rating, dish } = peticion.body;
 
     if (
       !restaurantName ||
       !restaurantName.trim() ||
+      !city ||
+      !city.trim() ||
       !location ||
       !location.trim() ||
       rating === undefined ||
@@ -299,6 +313,7 @@ servidor.patch("/reviews/:id", verificarToken, async (peticion, respuesta) => {
       peticion.params.id,
       {
         restaurantName,
+        city,
         location,
         rating: Number(rating),
         dish,
@@ -348,6 +363,153 @@ servidor.get("/reviews/:id", verificarToken, async (peticion, respuesta) => {
     }
 
     respuesta.json(review);
+  } catch (error) {
+    console.error(error);
+    respuesta.status(500).json({
+      error: "Error en el servidor",
+    });
+  }
+});
+
+/**
+ * Endpoint para editar el perfil del usuario autenticado.
+ *
+ * Requiere token.
+ * Permite actualizar username y email comprobando que no estén repetidos.
+ */
+servidor.patch("/profile", verificarToken, async (peticion, respuesta) => {
+  try {
+    const { username, email } = peticion.body;
+
+    if (!username || !username.trim() || !email || !email.trim()) {
+      return respuesta.status(400).json({
+        error: "Usuario y email son obligatorios",
+      });
+    }
+
+    const userId = String(peticion.usuario.id);
+
+    const usuarioActual = await buscarUsuarioPorId(userId);
+
+    if (!usuarioActual) {
+      return respuesta.status(404).json({
+        error: "Usuario no encontrado",
+      });
+    }
+
+    const usuarioConEseNombre = await buscarUsuarioPorNombre(username);
+    if (
+      usuarioConEseNombre &&
+      String(usuarioConEseNombre._id) !== userId
+    ) {
+      return respuesta.status(409).json({
+        error: "Ese nombre de usuario ya existe",
+      });
+    }
+
+    const usuarioConEseEmail = await buscarUsuarioPorEmail(email);
+    if (
+      usuarioConEseEmail &&
+      String(usuarioConEseEmail._id) !== userId
+    ) {
+      return respuesta.status(409).json({
+        error: "Ese email ya está registrado",
+      });
+    }
+
+    const resultado = await actualizarUsuario(userId, {
+      username,
+      email,
+    });
+
+    if (!resultado.existe) {
+      return respuesta.status(404).json({
+        error: "Usuario no encontrado",
+      });
+    }
+
+    respuesta.json({
+      message: "Perfil actualizado correctamente",
+    });
+  } catch (error) {
+    console.error(error);
+    respuesta.status(500).json({
+      error: "Error en el servidor",
+    });
+  }
+});
+
+/**
+ * Endpoint para cambiar la contraseña del usuario autenticado.
+ *
+ * Requiere token.
+ * Comprueba que la contraseña actual sea correcta y guarda la nueva encriptada.
+ */
+servidor.patch("/profile/password", verificarToken, async (peticion, respuesta) => {
+  try {
+    const { currentPassword, newPassword } = peticion.body;
+
+    if (
+      !currentPassword ||
+      !currentPassword.trim() ||
+      !newPassword ||
+      !newPassword.trim()
+    ) {
+      return respuesta.status(400).json({
+        error: "Todos los campos de contraseña son obligatorios",
+      });
+    }
+
+    const userId = String(peticion.usuario.id);
+
+    const usuarioActual = await buscarUsuarioPorId(userId);
+
+    if (!usuarioActual) {
+      return respuesta.status(404).json({
+        error: "Usuario no encontrado",
+      });
+    }
+
+    const coincidePassword = await bcrypt.compare(
+      currentPassword,
+      usuarioActual.password
+    );
+
+    if (!coincidePassword) {
+      return respuesta.status(401).json({
+        error: "La contraseña actual no es correcta",
+      });
+    }
+
+    const nuevaPasswordHash = await bcrypt.hash(newPassword, 10);
+
+    await actualizarPasswordUsuario(userId, nuevaPasswordHash);
+
+    respuesta.json({
+      message: "Contraseña actualizada correctamente",
+    });
+  } catch (error) {
+    console.error(error);
+    respuesta.status(500).json({
+      error: "Error en el servidor",
+    });
+  }
+});
+
+/**
+ * Endpoint para obtener reseñas destacadas de otros usuarios.
+ *
+ * Requiere token.
+ * Permite filtrar por ciudad mediante query string.
+ */
+servidor.get("/explore", verificarToken, async (peticion, respuesta) => {
+  try {
+    const city = peticion.query.city || "";
+    const userId = String(peticion.usuario.id);
+
+    const reviews = await leerReviewsExplorar(userId, city);
+
+    respuesta.json(reviews);
   } catch (error) {
     console.error(error);
     respuesta.status(500).json({
