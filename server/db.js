@@ -2,7 +2,7 @@
  * db.js
  * Funciones de acceso a datos de la aplicación.
  *
- * Este archivo contiene la conexión con MongoDB y las operaciones
+ * Este archivo centraliza la conexión con MongoDB y las operaciones
  * relacionadas con las colecciones principales del proyecto:
  * - usuarios
  * - reviews
@@ -27,7 +27,7 @@ const urlMongo = process.env.MONGO_URL;
 /**
  * Cliente reutilizable de MongoDB para mantener una única conexión activa.
  */
-let client;
+let client = null;
 
 /**
  * Establece la conexión con MongoDB.
@@ -35,17 +35,33 @@ let client;
  * La primera vez crea el cliente de MongoDB y realiza la conexión.
  * En las siguientes llamadas reutiliza la misma conexión ya abierta.
  *
+ * Si la conexión falla, limpia el cliente para evitar reutilizar
+ * una instancia cerrada o inválida en la siguiente petición.
+ *
  * @returns {Promise<MongoClient>} Cliente de MongoDB conectado
  */
 async function conectar() {
-  if (!client) {
-    client = new MongoClient(urlMongo);
-    await client.connect();
+  if (client) {
+    return client;
   }
 
-  return client;
-}
+  const nuevoClient = new MongoClient(urlMongo);
 
+  try {
+    await nuevoClient.connect();
+    client = nuevoClient;
+    return client;
+  } catch (error) {
+    try {
+      await nuevoClient.close();
+    } catch {
+      // No hacer nada si el cierre también falla
+    }
+
+    client = null;
+    throw error;
+  }
+}
 /**
  * Busca un usuario por su nombre de usuario.
  *
