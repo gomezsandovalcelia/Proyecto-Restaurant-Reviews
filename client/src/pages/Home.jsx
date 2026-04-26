@@ -2,6 +2,19 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "../services/auth";
 
+/**
+ * Home.jsx
+ * Pantalla de inicio de sesión de la aplicación.
+ *
+ * Este componente permite al usuario introducir sus credenciales,
+ * enviarlas al backend y, si son correctas, guardar el token JWT
+ * en localStorage para acceder a la zona privada de la aplicación.
+ *
+ * Hooks usados:
+ * - useState: controla los valores del formulario y los errores
+ * - useNavigate: redirige al usuario a la pantalla principal tras el login
+ */
+
 function Home() {
   const [formData, setFormData] = useState({
     username: "",
@@ -11,6 +24,10 @@ function Home() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  /**
+  * Actualiza el estado del formulario cada vez que el usuario
+  * modifica uno de los campos de entrada.
+  */
   function handleChange(e) {
     const { name, value } = e.target;
 
@@ -19,7 +36,13 @@ function Home() {
       [name]: value,
     });
   }
-
+  /**
+  * Gestiona el envío del formulario de login.
+  *
+  * Valida que los campos obligatorios estén completos,
+  * envía las credenciales al backend y, si el login es correcto,
+  * guarda el token recibido y redirige al usuario a la pantalla principal.
+  */
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");

@@ -3,12 +3,33 @@ import Navbar from "../components/Navbar";
 import { getExploreReviews } from "../services/reviews";
 import spanishCities from "../data/spanishCities";
 
+/**
+ * Explore.jsx
+ * Página de exploración de reseñas de otros usuarios.
+ *
+ * Este componente muestra reseñas destacadas publicadas por otros usuarios
+ * y permite filtrarlas por ciudad.
+ *
+ * Cada vez que cambia la ciudad seleccionada, se realiza una nueva petición
+ * al backend para obtener las reseñas correspondientes.
+ *
+ * Hooks usados:
+ * - useState: controla la ciudad seleccionada, las reseñas, la carga y los errores
+ * - useEffect: carga las reseñas al abrir la página y al cambiar el filtro
+ */
+
 function Explore() {
   const [selectedCity, setSelectedCity] = useState("");
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  /**
+   * Carga las reseñas destacadas de otros usuarios.
+   *
+   * Se ejecuta al montar el componente y cada vez que cambia
+   * la ciudad seleccionada en el filtro.
+   */
   useEffect(() => {
     async function cargarReviews() {
       try {

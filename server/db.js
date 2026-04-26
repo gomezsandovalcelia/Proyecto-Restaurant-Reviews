@@ -1,11 +1,15 @@
 /**
  * db.js
- * Funciones de acceso a datos para la colección de usuarios.
+ * Funciones de acceso a datos de la aplicación.
  *
- * Este archivo centraliza la conexión con MongoDB y las operaciones
- * relacionadas con la colección "usuarios".
+ * Este archivo contiene la conexión con MongoDB y las operaciones
+ * relacionadas con las colecciones principales del proyecto:
+ * - usuarios
+ * - reviews
+ *
+ * También agrupa las consultas necesarias para el registro,
+ * login, perfil de usuario, gestión de reseñas y sección Explorar.
  */
-
 
 import dotenv from "dotenv";
 dotenv.config();
@@ -15,9 +19,24 @@ dns.setServers(["1.1.1.1", "1.0.0.1", "8.8.8.8", "8.8.4.4"]);
 
 import { MongoClient, ObjectId } from "mongodb";
 
+/**
+ * URL de conexión a MongoDB obtenida desde variables de entorno.
+ */
 const urlMongo = process.env.MONGO_URL;
+
+/**
+ * Cliente reutilizable de MongoDB para mantener una única conexión activa.
+ */
 let client;
 
+/**
+ * Establece la conexión con MongoDB.
+ *
+ * La primera vez crea el cliente de MongoDB y realiza la conexión.
+ * En las siguientes llamadas reutiliza la misma conexión ya abierta.
+ *
+ * @returns {Promise<MongoClient>} Cliente de MongoDB conectado
+ */
 async function conectar() {
   if (!client) {
     client = new MongoClient(urlMongo);
@@ -210,6 +229,7 @@ export async function actualizarUsuario(userId, updatedData) {
     cambio: resultado.modifiedCount,
   };
 }
+
 /**
  * Actualiza la contraseña del usuario autenticado.
  *
@@ -233,7 +253,10 @@ export async function actualizarPasswordUsuario(userId, passwordHash) {
 }
 
 /**
- * Devuelve reseñas destacadas de otros usuarios para la sección Explorar.
+ * Devuelve las reseñas destacadas de otros usuarios para la sección Explorar.
+ *
+ * Permite aplicar un filtro opcional por ciudad y devuelve como máximo
+ * 9 resultados ordenados por mejor nota y fecha más reciente.
  *
  * @param {string} userId - Id del usuario autenticado
  * @param {string} city - Ciudad por la que filtrar (opcional)

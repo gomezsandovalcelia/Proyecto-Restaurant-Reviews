@@ -4,6 +4,26 @@ import Navbar from "../components/Navbar";
 import { createReview } from "../services/reviews";
 import spanishCities from "../data/spanishCities";
 
+/**
+ * CreateReview.jsx
+ * Pantalla de creación de una nueva reseña.
+ *
+ * Este componente permite al usuario autenticado registrar
+ * un nuevo restaurante indicando:
+ * - nombre
+ * - ciudad
+ * - ubicación
+ * - nota
+ * - plato recomendado
+ *
+ * Los datos se envían al backend y, si la creación es correcta,
+ * el usuario es redirigido a la pantalla principal de sus reseñas.
+ *
+ * Hooks usados:
+ * - useState: controla los datos del formulario y los errores
+ * - useNavigate: redirige al usuario tras crear la reseña o cancelar
+ */
+
 function CreateReview() {
   const navigate = useNavigate();
 
@@ -17,6 +37,10 @@ function CreateReview() {
 
   const [error, setError] = useState("");
 
+  /**
+   * Actualiza el estado del formulario cada vez que el usuario
+   * modifica uno de los campos de entrada o selección.
+   */
   function handleChange(e) {
     const { name, value } = e.target;
 
@@ -26,6 +50,14 @@ function CreateReview() {
     });
   }
 
+  /**
+   * Gestiona el envío del formulario de creación de reseña.
+   *
+   * Comprueba que todos los campos obligatorios estén completos
+   * y envía los datos al backend para guardar la nueva reseña.
+   *
+   * Si la operación es correcta, redirige al usuario a la pantalla principal.
+   */
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");

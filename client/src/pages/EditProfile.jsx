@@ -3,6 +3,24 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { getProfile, updateProfile, updatePassword } from "../services/auth";
 
+/**
+ * EditProfile.jsx
+ * Página de edición del perfil del usuario autenticado.
+ *
+ * Este componente permite modificar:
+ * - el nombre de usuario
+ * - el correo electrónico
+ * - la contraseña
+ *
+ * La pantalla está dividida en dos formularios independientes:
+ * uno para los datos generales de la cuenta y otro para el cambio de contraseña.
+ *
+ * Hooks usados:
+ * - useState: controla los datos de ambos formularios, la carga y los mensajes
+ * - useEffect: carga la información actual del perfil al abrir la página
+ * - useNavigate: permite volver a la página de perfil
+ */
+
 function EditProfile() {
   const navigate = useNavigate();
 
@@ -23,6 +41,10 @@ function EditProfile() {
   const [passwordError, setPasswordError] = useState("");
   const [passwordMessage, setPasswordMessage] = useState("");
 
+  /**
+   * Carga los datos actuales del perfil al montar el componente
+   * para rellenar automáticamente el formulario de edición.
+   */
   useEffect(() => {
     async function cargarPerfil() {
       try {
@@ -41,6 +63,10 @@ function EditProfile() {
     cargarPerfil();
   }, []);
 
+  /**
+   * Actualiza el estado del formulario de datos de la cuenta
+   * cuando el usuario modifica el nombre o el correo electrónico.
+   */
   function handleChange(e) {
     const { name, value } = e.target;
 
@@ -49,7 +75,10 @@ function EditProfile() {
       [name]: value,
     }));
   }
-
+  /**
+   * Actualiza el estado del formulario de cambio de contraseña
+   * cuando el usuario modifica cualquiera de sus campos.
+   */
   function handlePasswordChange(e) {
     const { name, value } = e.target;
 
@@ -58,7 +87,12 @@ function EditProfile() {
       [name]: value,
     }));
   }
-
+  /**
+   * Gestiona el envío del formulario de edición de perfil.
+   *
+   * Valida que los campos obligatorios estén completos
+   * y envía al backend el nuevo nombre de usuario y el nuevo email.
+   */
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
@@ -79,6 +113,15 @@ function EditProfile() {
     }
   }
 
+  /**
+   * Gestiona el envío del formulario de cambio de contraseña.
+   *
+   * Comprueba que todos los campos estén completos,
+   * valida que la nueva contraseña y su confirmación coincidan
+   * y envía los datos al backend para actualizar la contraseña.
+   *
+   * Si el cambio es correcto, limpia los campos del formulario.
+   */
   async function handlePasswordSubmit(e) {
     e.preventDefault();
     setPasswordError("");

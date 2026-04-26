@@ -1,14 +1,44 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
+/**
+ * Navbar.jsx
+ * Barra de navegación principal de la zona privada de la aplicación.
+ *
+ * Este componente permite al usuario moverse entre las secciones
+ * principales del proyecto:
+ * - Home
+ * - Crear reseña
+ * - Explorar
+ * - Perfil
+ *
+ * También muestra el logo de la aplicación, adapta la navegación
+ * a pantallas pequeñas mediante menú hamburguesa y permite cerrar sesión.
+ */
+
 function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  /**
+   * Cierra la sesión del usuario actual.
+   *
+   * Elimina el token guardado en localStorage y redirige
+   * al usuario a la pantalla de login.
+   */
   function cerrarSesion() {
     localStorage.removeItem("token");
     navigate("/");
   }
 
+  /**
+   * Devuelve la clase CSS correspondiente a cada enlace del menú.
+   *
+   * Si la ruta actual coincide con la ruta recibida, añade la clase
+   * de enlace activo para destacar visualmente la sección actual.
+   *
+   * @param {string} path - Ruta que se quiere comprobar
+   * @returns {string} Clases CSS del enlace
+   */
   function linkClass(path) {
     return location.pathname === path
       ? "nav-link nav-link-custom active"

@@ -1,16 +1,19 @@
 /**
  * auth.js
- * Funciones de autenticación del frontend.
+ * Funciones del frontend relacionadas con la autenticación y el perfil.
  *
  * Este archivo centraliza las peticiones HTTP relacionadas con:
  * - Registro de usuarios
  * - Inicio de sesión
- *
- * Datos:
- * - API_URL: URL base del backend
+ * - Obtención de los datos del perfil
+ * - Actualización de los datos del perfil
+ * - Cambio de contraseña
  */
 
-const API_URL = "http://localhost:4000";
+/**
+ * URL base de la API del backend.
+ */
+const API_URL = import.meta.env.VITE_API_URL;
 
 /**
  * Registra un nuevo usuario en la base de datos.
@@ -21,7 +24,6 @@ const API_URL = "http://localhost:4000";
  * @param {string} userData.password - Contraseña sin encriptar
  * @returns {Promise<Object>} Respuesta del servidor con mensaje o error
  */
-
 export async function registerUser(userData) {
     const response = await fetch(`${API_URL}/register`, {
         method: "POST",
@@ -48,7 +50,6 @@ export async function registerUser(userData) {
  * @param {string} userData.password - Contraseña introducida en el login
  * @returns {Promise<Object>} Respuesta del servidor con el token JWT
  */
-
 export async function loginUser(userData) {
     const response = await fetch(`${API_URL}/login`, {
         method: "POST",

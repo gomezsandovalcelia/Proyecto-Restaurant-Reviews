@@ -3,6 +3,22 @@ import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { getUserReviews, deleteReview } from "../services/reviews";
 
+/**
+ * UserHome.jsx
+ * Página principal del usuario autenticado.
+ *
+ * Este componente muestra las reseñas del usuario logueado y permite:
+ * - Consultar sus reseñas paginadas
+ * - Ordenarlas por fecha o por nota
+ * - Acceder a la edición de una reseña
+ * - Eliminar una reseña mediante un modal de confirmación
+ *
+ * Hooks usados:
+ * - useState: gestiona reseñas, carga, errores, orden y paginación
+ * - useEffect: carga las reseñas al cambiar de página
+ * - useMemo: ordena las reseñas según el criterio seleccionado
+ */
+
 function UserHome() {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -13,6 +29,12 @@ function UserHome() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
 
+  /**
+  * Carga las reseñas del usuario autenticado cada vez que cambia la página actual.
+  *
+  * La respuesta del backend incluye tanto las reseñas como la información
+  * necesaria para construir la paginación.
+  */
   useEffect(() => {
     async function cargarReviews() {
       try {
@@ -30,14 +52,27 @@ function UserHome() {
     cargarReviews();
   }, [currentPage]);
 
+  /**
+  * Abre el modal de confirmación de borrado y guarda
+  * la reseña seleccionada en el estado.
+  */
   function openDeleteModal(review) {
     setReviewToDelete(review);
   }
 
+  /**
+  * Cierra el modal de borrado y limpia la reseña seleccionada.
+  */
   function closeDeleteModal() {
     setReviewToDelete(null);
   }
 
+  /**
+  * Borra la reseña seleccionada y vuelve a cargar la página actual de resultados.
+  *
+  * Si al borrar la última reseña de la página actual esta queda vacía,
+  * retrocede automáticamente a la página anterior.
+  */
   async function confirmDelete() {
     if (!reviewToDelete) return;
 
@@ -58,7 +93,13 @@ function UserHome() {
       closeDeleteModal();
     }
   }
-
+  /**
+  * Genera una copia ordenada de las reseñas mostradas en la página actual.
+  *
+  * Permite ordenarlas por:
+  * - fecha de creación, mostrando primero las más recientes
+  * - nota, mostrando primero las de mayor puntuación
+  */
   const sortedReviews = useMemo(() => {
     const reviewsCopy = [...reviews];
 

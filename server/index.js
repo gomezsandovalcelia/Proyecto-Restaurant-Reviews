@@ -3,18 +3,24 @@
  * index.js
  * Archivo principal de la API Express.
  *
- * Esta API se encarga de:
- * - Registrar usuarios nuevos
- * - Iniciar sesión
- * - Generar tokens JWT para autenticación
+ * Este archivo configura el servidor, los middlewares globales
+ * y los endpoints principales de la aplicación.
  *
- * Middlewares:
+ * Funcionalidades principales de la API:
+ * - Registro de usuarios
+ * - Inicio de sesión y generación de token JWT
+ * - Obtención y edición del perfil del usuario autenticado
+ * - Cambio de contraseña
+ * - Creación, lectura, edición y borrado de reseñas
+ * - Consulta de reseñas destacadas en la sección Explorar
+ *
+ * Middlewares globales:
  * - cors: permite peticiones desde el frontend
- * - express.json: permite recibir datos JSON en el body
+ * - express.json: permite recibir y procesar cuerpos en formato JSON
  *
- * Endpoints:
- * - POST /register
- * - POST /login
+ * Protección de rutas:
+ * - Las rutas privadas utilizan el middleware verificarToken
+ *   para comprobar la autenticación del usuario.
  */
 
 import dotenv from "dotenv";
@@ -25,6 +31,9 @@ dns.setServers(["1.1.1.1", "1.0.0.1", "8.8.8.8", "8.8.4.4"]);
 
 import jwt from "jsonwebtoken";
 
+/**
+ * Instancia principal del servidor Express.
+ */
 import express from "express";
 import cors from "cors";
 import bcrypt from "bcrypt";
@@ -56,8 +65,6 @@ servidor.use(express.json());
  * Comprueba que los campos estén completos, valida que el usuario
  * y el email no existan ya y guarda el nuevo usuario con la contraseña encriptada.
  */
-
-
 servidor.post("/register", async (peticion, respuesta) => {
     try {
         const { username, email, password } = peticion.body;
@@ -91,11 +98,9 @@ servidor.post("/register", async (peticion, respuesta) => {
  * Endpoint de login.
  *
  * Recibe username y password.
- * Busca al usuario en la base de datos, compara la contraseña con bcrypt
- * y devuelve un token JWT si las credenciales son correctas.
+ * Comprueba que las credenciales sean válidas y, si lo son,
+ * genera un token JWT que permitirá acceder a las rutas privadas.
  */
-
-
 servidor.post("/login", async (peticion, respuesta) => {
     try {
         const { username, password } = peticion.body;
@@ -107,13 +112,12 @@ servidor.post("/login", async (peticion, respuesta) => {
         const usuarioEncontrado = await buscarUsuarioPorNombre(username);
 
         if (!usuarioEncontrado) {
-            return respuesta.status(404).json({error: "Usuario no encontrado",});
+          return respuesta.status(401).json({error: "Credenciales incorrectas",});
         }
 
         const coincidePassword = await bcrypt.compare( password, usuarioEncontrado.password);
 
-        if (!coincidePassword) {
-            return respuesta.status(401).json({ error: "Contraseña incorrecta", });
+        if (!coincidePassword) { return respuesta.status(401).json({ error: "Credenciales incorrectas",});
         }
 
         const token = jwt.sign(
@@ -136,8 +140,9 @@ servidor.post("/login", async (peticion, respuesta) => {
 /**
  * Middleware de verificación de token.
  *
- * Comprueba que la petición incluya un token JWT válido
- * y guarda los datos del usuario autenticado en la petición.
+ * Comprueba que la petición incluya un JWT válido.
+ * Si el token es correcto, guarda los datos del usuario autenticado
+ * en el objeto de la petición para que puedan usarse en rutas privadas.
  */
 function verificarToken(peticion, respuesta, siguiente) {
   const authHeader = peticion.headers.authorization;
@@ -518,10 +523,19 @@ servidor.get("/explore", verificarToken, async (peticion, respuesta) => {
   }
 });
 
+/**
+ * Middleware final para rutas no encontradas.
+ *
+ * Se ejecuta cuando ninguna de las rutas anteriores coincide
+ * con la petición realizada por el cliente.
+ */
 servidor.use((peticion, respuesta) => {
     respuesta.status(404).json({
         error: "Recurso no encontrado",
     });
 });
 
+/**
+ * Inicia el servidor Express en el puerto definido en las variables de entorno.
+ */
 servidor.listen(process.env.PORT);

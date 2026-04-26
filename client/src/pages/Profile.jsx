@@ -3,6 +3,22 @@ import Navbar from "../components/Navbar";
 import { getProfile } from "../services/auth";
 import { useNavigate } from "react-router-dom";
 
+/**
+ * Profile.jsx
+ * Página de perfil del usuario autenticado.
+ *
+ * Este componente obtiene y muestra los datos principales
+ * de la cuenta del usuario logueado, concretamente:
+ * - nombre de usuario
+ * - correo electrónico
+ *
+ * También permite acceder a la pantalla de edición del perfil.
+ *
+ * Hooks usados:
+ * - useState: controla los datos del perfil, la carga y los errores
+ * - useEffect: carga la información del perfil al abrir la página
+ * - useNavigate: redirige al usuario a la pantalla de edición
+ */
 
 function Profile() {
   const navigate = useNavigate();
@@ -14,7 +30,10 @@ function Profile() {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
+  /**
+   * Carga los datos del perfil del usuario autenticado
+   * al montar el componente.
+   */
   useEffect(() => {
     async function cargarPerfil() {
       try {
