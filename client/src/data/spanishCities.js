@@ -1,3 +1,12 @@
+/**
+ * spanishCities.js
+ * Listado de ciudades españolas utilizado en los formularios de reseñas.
+ *
+ * Este archivo centraliza las opciones del campo "city" para:
+ * - Evitar valores escritos de forma distinta
+ * - Reutilizar la misma lista en crear y editar reseña
+ * - Facilitar el filtrado posterior en la sección Explorar
+ */
 const spanishCities = [
   "A Coruña",
   "Albacete",

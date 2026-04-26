@@ -2,6 +2,19 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { registerUser } from "../services/auth";
 
+/**
+ * Register.jsx
+ * Pantalla de registro de nuevos usuarios.
+ *
+ * Este componente permite crear una cuenta nueva mediante un formulario
+ * con nombre de usuario, correo electrónico y contraseña.
+ * Antes de enviar los datos al backend, valida que todos los campos
+ * estén completos y que ambas contraseñas coincidan.
+ *
+ * Hooks usados:
+ * - useState: controla los valores del formulario, los mensajes y los errores
+*/
+
 function Register() {
   const [formData, setFormData] = useState({
     username: "",
@@ -13,6 +26,10 @@ function Register() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
+  /**
+  * Actualiza el estado del formulario cada vez que el usuario
+  * modifica uno de los campos de entrada.
+  */
   function handleChange(e) {
     const { name, value } = e.target;
 
@@ -22,6 +39,16 @@ function Register() {
     });
   }
 
+  /**
+  * Gestiona el envío del formulario de registro.
+  *
+  * Comprueba que todos los campos obligatorios estén completos,
+  * valida que la contraseña y su confirmación coincidan
+  * y envía los datos al backend para crear un nuevo usuario.
+  *
+  * Si el registro es correcto, muestra un mensaje de éxito
+  * y limpia el formulario.
+  */
   async function handleSubmit(e) {
     e.preventDefault();
 

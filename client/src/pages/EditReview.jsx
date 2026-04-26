@@ -4,6 +4,29 @@ import Navbar from "../components/Navbar";
 import { getReviewById, updateReview } from "../services/reviews";
 import spanishCities from "../data/spanishCities";
 
+/**
+ * EditReview.jsx
+ * Pantalla de edición de una reseña existente.
+ *
+ * Este componente obtiene una reseña concreta del usuario autenticado,
+ * rellena automáticamente el formulario con sus datos actuales
+ * y permite modificar:
+ * - nombre del restaurante
+ * - ciudad
+ * - ubicación
+ * - nota
+ * - plato recomendado
+ *
+ * Si la actualización es correcta, el usuario es redirigido
+ * a la pantalla principal de sus reseñas.
+ *
+ * Hooks usados:
+ * - useState: controla los datos del formulario, la carga y los errores
+ * - useEffect: carga la reseña actual al abrir la página
+ * - useParams: obtiene el id de la reseña desde la URL
+ * - useNavigate: redirige al usuario tras guardar o cancelar
+ */
+
 function EditReview() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -19,6 +42,10 @@ function EditReview() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  /**
+   * Carga los datos actuales de la reseña al montar el componente
+   * para rellenar automáticamente el formulario de edición.
+   */
   useEffect(() => {
     async function cargarReview() {
       try {
@@ -41,6 +68,10 @@ function EditReview() {
     cargarReview();
   }, [id]);
 
+  /**
+   * Actualiza el estado del formulario cada vez que el usuario
+   * modifica uno de los campos de entrada o selección.
+   */
   function handleChange(e) {
     const { name, value } = e.target;
 
@@ -50,6 +81,14 @@ function EditReview() {
     }));
   }
 
+  /**
+   * Gestiona el envío del formulario de edición de reseña.
+   *
+   * Comprueba que todos los campos obligatorios estén completos
+   * y envía al backend los nuevos datos de la reseña seleccionada.
+   *
+   * Si la operación es correcta, redirige al usuario a la pantalla principal.
+   */
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
