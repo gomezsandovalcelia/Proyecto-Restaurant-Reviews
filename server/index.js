@@ -523,6 +523,14 @@ servidor.get("/explore", verificarToken, async (peticion, respuesta) => {
   }
 });
 
+
+servidor.get("/", (peticion, respuesta) => {
+  respuesta.json({
+    message: "API funcionando correctamente",
+  });
+});
+
+
 /**
  * Middleware final para rutas no encontradas.
  *
@@ -535,12 +543,6 @@ servidor.use((peticion, respuesta) => {
     });
 });
 
-
-servidor.get("/", (peticion, respuesta) => {
-  respuesta.json({
-    message: "API funcionando correctamente",
-  });
-});
 
 /**
  * Inicia el servidor Express en el puerto definido en las variables de entorno.
