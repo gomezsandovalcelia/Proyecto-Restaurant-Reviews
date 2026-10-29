@@ -1,4 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLanguage } from "../i18n/LanguageContext";
 
 /**
  * Navbar.jsx
@@ -18,6 +19,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   /**
    * Cierra la sesión del usuario actual.
@@ -72,31 +74,31 @@ function Navbar() {
           <ul className="navbar-nav me-auto mb-2 mb-lg-0 nav-list-custom">
             <li className="nav-item">
               <Link className={linkClass("/home")} to="/home">
-                Home
+                {t("navbar.home")}
               </Link>
             </li>
 
             <li className="nav-item">
               <Link className={linkClass("/create-review")} to="/create-review">
-                Crear reseña
+                {t("navbar.createReview")}
               </Link>
             </li>
-            
+
             <li className="nav-item">
               <Link className={linkClass("/explore")} to="/explore">
-                Explorar
+                {t("navbar.explore")}
               </Link>
             </li>
 
             <li className="nav-item">
               <Link className={linkClass("/profile")} to="/profile">
-                Perfil
+                {t("navbar.profile")}
               </Link>
             </li>
           </ul>
 
           <button className="btn logout-btn" onClick={cerrarSesion}>
-            Cerrar sesión
+            {t("navbar.logout")}
           </button>
         </div>
       </div>

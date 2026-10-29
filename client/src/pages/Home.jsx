@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "../services/auth";
+import LanguageToggle from "../components/LanguageToggle";
+import { useLanguage } from "../i18n/LanguageContext";
 
 /**
  * Home.jsx
@@ -23,6 +25,7 @@ function Home() {
 
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   /**
   * Actualiza el estado del formulario cada vez que el usuario
@@ -50,7 +53,7 @@ function Home() {
     const { username, password } = formData;
 
     if (!username || !password) {
-      setError("Todos los campos son obligatorios");
+      setError(t("common.allFieldsRequired"));
       return;
     }
 
@@ -74,6 +77,10 @@ function Home() {
           <div className="w-100 px-4" style={{ maxWidth: "440px" }}>
             <div className="card auth-card shadow border-0">
               <div className="card-body p-4 p-md-5">
+                <div className="d-flex justify-content-end mb-2">
+                  <LanguageToggle />
+                </div>
+
                 <div className="text-center mb-4">
                   <img
                     src="/images/logo.png"
@@ -81,21 +88,21 @@ function Home() {
                     className="auth-logo mb-3"
                   />
                   <p className="auth-subtitle mb-0">
-                    Inicia sesión para continuar
+                    {t("login.subtitle")}
                   </p>
                 </div>
 
                 <form onSubmit={handleSubmit}>
                   <div className="mb-3">
                     <label htmlFor="username" className="form-label auth-label">
-                      Usuario
+                      {t("common.username")}
                     </label>
                     <input
                       type="text"
                       className="form-control themed-input"
                       id="username"
                       name="username"
-                      placeholder="Introduce tu usuario"
+                      placeholder={t("common.usernamePlaceholder")}
                       value={formData.username}
                       onChange={handleChange}
                     />
@@ -103,14 +110,14 @@ function Home() {
 
                   <div className="mb-4">
                     <label htmlFor="password" className="form-label auth-label">
-                      Contraseña
+                      {t("common.password")}
                     </label>
                     <input
                       type="password"
                       className="form-control themed-input"
                       id="password"
                       name="password"
-                      placeholder="Introduce tu contraseña"
+                      placeholder={t("common.passwordPlaceholder")}
                       value={formData.password}
                       onChange={handleChange}
                     />
@@ -123,14 +130,14 @@ function Home() {
                   )}
 
                   <button type="submit" className="btn primary-btn w-100 mb-3">
-                    Iniciar sesión
+                    {t("login.submit")}
                   </button>
                 </form>
 
                 <div className="text-center">
-                  <p className="mb-2 auth-subtitle">¿No tienes cuenta?</p>
+                  <p className="mb-2 auth-subtitle">{t("login.noAccount")}</p>
                   <Link to="/register" className="btn secondary-btn w-100">
-                    Ir a registro
+                    {t("login.goToRegister")}
                   </Link>
                 </div>
               </div>

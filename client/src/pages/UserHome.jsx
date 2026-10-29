@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { getUserReviews, deleteReview } from "../services/reviews";
+import { useLanguage } from "../i18n/LanguageContext";
 
 /**
  * UserHome.jsx
@@ -28,6 +29,8 @@ function UserHome() {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+
+  const { t } = useLanguage();
 
   /**
   * Carga las reseñas del usuario autenticado cada vez que cambia la página actual.
@@ -120,26 +123,26 @@ function UserHome() {
 
       <main className="container py-5">
         <div className="mb-4 text-center">
-          <h1 className="fw-bold userhome-title">Mis reseñas</h1>
+          <h1 className="fw-bold userhome-title">{t("userHome.title")}</h1>
           <p className="userhome-subtitle mb-0">
-            Aquí puedes ver y gestionar todos los restaurantes que has guardado.
+            {t("userHome.subtitle")}
           </p>
         </div>
 
         {loading ? (
-          <p className="text-center userhome-subtitle">Cargando reseñas...</p>
+          <p className="text-center userhome-subtitle">{t("common.loadingReviews")}</p>
         ) : error ? (
           <div className="alert alert-danger">{error}</div>
         ) : reviews.length === 0 ? (
           <div className="card border-0 shadow-sm empty-state-card userhome-empty-card">
             <div className="card-body p-4 p-md-5 text-center">
-              <h2 className="h4 mb-3 userhome-title">Todavía no tienes reseñas</h2>
+              <h2 className="h4 mb-3 userhome-title">{t("userHome.emptyTitle")}</h2>
               <p className="userhome-subtitle mb-4">
-                Empieza guardando tu primera experiencia en un restaurante.
+                {t("userHome.emptyText")}
               </p>
 
               <Link to="/create-review" className="btn primary-btn">
-                Crear reseña
+                {t("createReview.title")}
               </Link>
             </div>
           </div>
@@ -152,7 +155,7 @@ function UserHome() {
                 }`}
                 onClick={() => setSortType("date")}
               >
-                Fecha
+                {t("userHome.sortDate")}
               </button>
 
               <button
@@ -161,7 +164,7 @@ function UserHome() {
                 }`}
                 onClick={() => setSortType("rating")}
               >
-                Nota
+                {t("userHome.sortRating")}
               </button>
             </div>
 
@@ -173,19 +176,19 @@ function UserHome() {
                       <h3 className="h5 review-card-title">{review.restaurantName}</h3>
 
                       <p className="review-card-location mb-1">
-                        <strong>Ciudad:</strong> {review.city || "Sin ciudad"}
+                        <strong>{t("review.city")}:</strong> {review.city || t("review.noCity")}
                       </p>
 
                       <p className="mb-2 review-card-text">
-                        <strong>Ubicación:</strong> {review.location}
+                        <strong>{t("review.location")}:</strong> {review.location}
                       </p>
 
                       <p className="mb-2 review-card-text">
-                        <strong>Nota:</strong> {review.rating}/10
+                        <strong>{t("review.rating")}:</strong> {review.rating}/10
                       </p>
 
                       <p className="mb-4 review-card-text">
-                        <strong>Plato recomendado:</strong> {review.dish}
+                        <strong>{t("review.recommendedDish")}:</strong> {review.dish}
                       </p>
 
                       <div className="mt-auto d-flex gap-2">
@@ -193,14 +196,14 @@ function UserHome() {
                           to={`/edit-review/${review._id}`}
                           className="btn secondary-btn w-50"
                         >
-                          Editar
+                          {t("common.edit")}
                         </Link>
 
                         <button
                           className="btn delete-btn w-50"
                           onClick={() => openDeleteModal(review)}
                         >
-                          Borrar
+                          {t("common.delete")}
                         </button>
                       </div>
                     </div>
@@ -216,11 +219,11 @@ function UserHome() {
                   onClick={() => setCurrentPage((prev) => prev - 1)}
                   disabled={currentPage === 1}
                 >
-                  Anterior
+                  {t("userHome.previous")}
                 </button>
 
                 <span className="pagination-info">
-                  Página {currentPage} de {totalPages}
+                  {t("userHome.page", { current: currentPage, total: totalPages })}
                 </span>
 
                 <button
@@ -228,7 +231,7 @@ function UserHome() {
                   onClick={() => setCurrentPage((prev) => prev + 1)}
                   disabled={currentPage === totalPages}
                 >
-                  Siguiente
+                  {t("userHome.next")}
                 </button>
               </div>
             )}
@@ -243,9 +246,9 @@ function UserHome() {
           <div className="custom-modal-wrapper">
             <div className="card border-0 shadow custom-modal-card">
               <div className="card-body p-4">
-                <h2 className="h5 mb-3 userhome-title">Confirmar borrado</h2>
+                <h2 className="h5 mb-3 userhome-title">{t("userHome.confirmDeleteTitle")}</h2>
                 <p className="mb-4 review-card-text">
-                  ¿Seguro que quieres borrar la reseña de{" "}
+                  {t("userHome.confirmDeleteText")}{" "}
                   <strong>{reviewToDelete.restaurantName}</strong>?
                 </p>
 
@@ -254,10 +257,10 @@ function UserHome() {
                     className="btn secondary-btn"
                     onClick={closeDeleteModal}
                   >
-                    Cancelar
+                    {t("common.cancel")}
                   </button>
                   <button className="btn delete-btn" onClick={confirmDelete}>
-                    Borrar
+                    {t("common.delete")}
                   </button>
                 </div>
               </div>

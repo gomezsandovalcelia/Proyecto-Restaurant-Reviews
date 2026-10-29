@@ -51,6 +51,7 @@ import {
   actualizarUsuario,
   actualizarPasswordUsuario,
 } from "./db.js";
+import { mensaje } from "./mensajes.js";
 
 const servidor = express();
 
@@ -70,27 +71,27 @@ servidor.post("/register", async (peticion, respuesta) => {
         const { username, email, password } = peticion.body;
 
         if (!username || !username.trim() || !email || !email.trim() || !password || !password.trim()) {
-            return respuesta.status(400).json({error: "Todos los campos son obligatorios",});
+            return respuesta.status(400).json({error: mensaje(peticion, "camposObligatorios"),});
         }
 
         const usuarioExistente = await buscarUsuarioPorNombre(username);
         if (usuarioExistente) {
-            return respuesta.status(409).json({error: "Ese nombre de usuario ya existe", });
+            return respuesta.status(409).json({error: mensaje(peticion, "usuarioExiste"), });
         }
 
         const emailExistente = await buscarUsuarioPorEmail(email);
         if (emailExistente) {
-            return respuesta.status(409).json({error: "Ese correo ya está registrado", });
+            return respuesta.status(409).json({error: mensaje(peticion, "emailExiste"), });
         }
 
         const passwordHash = await bcrypt.hash(password, 10);
 
         const id = await crearUsuario({username,email, password: passwordHash, createdAt: new Date(),});
 
-        respuesta.status(201).json({ message: "Usuario registrado correctamente", id, });
+        respuesta.status(201).json({ message: mensaje(peticion, "usuarioRegistrado"), id, });
     } catch (error) {
         console.error(error);
-        respuesta.status(500).json({ error: "Error en el servidor", });
+        respuesta.status(500).json({ error: mensaje(peticion, "errorServidor"), });
     }
 });
 
@@ -106,18 +107,18 @@ servidor.post("/login", async (peticion, respuesta) => {
         const { username, password } = peticion.body;
 
         if (!username || !username.trim() || !password || !password.trim()) {
-            return respuesta.status(400).json({error: "Usuario y contraseña obligatorios",});
+            return respuesta.status(400).json({error: mensaje(peticion, "usuarioPasswordObligatorios"),});
         }
 
         const usuarioEncontrado = await buscarUsuarioPorNombre(username);
 
         if (!usuarioEncontrado) {
-          return respuesta.status(401).json({error: "Credenciales incorrectas",});
+          return respuesta.status(401).json({error: mensaje(peticion, "credencialesIncorrectas"),});
         }
 
         const coincidePassword = await bcrypt.compare( password, usuarioEncontrado.password);
 
-        if (!coincidePassword) { return respuesta.status(401).json({ error: "Credenciales incorrectas",});
+        if (!coincidePassword) { return respuesta.status(401).json({ error: mensaje(peticion, "credencialesIncorrectas"),});
         }
 
         const token = jwt.sign(
@@ -126,13 +127,13 @@ servidor.post("/login", async (peticion, respuesta) => {
         );
 
         respuesta.json({
-            message: "Login correcto",
+            message: mensaje(peticion, "loginCorrecto"),
             token,
         });
     } catch (error) {
         console.error(error);
         respuesta.status(500).json({
-            error: "Error en el servidor",
+            error: mensaje(peticion, "errorServidor"),
         });
     }
 });
@@ -149,7 +150,7 @@ function verificarToken(peticion, respuesta, siguiente) {
 
   if (!authHeader) {
     return respuesta.status(403).json({
-      error: "Token requerido",
+      error: mensaje(peticion, "tokenRequerido"),
     });
   }
 
@@ -161,7 +162,7 @@ function verificarToken(peticion, respuesta, siguiente) {
     siguiente();
   } catch (error) {
     return respuesta.status(403).json({
-      error: "Token inválido",
+      error: mensaje(peticion, "tokenInvalido"),
     });
   }
 }
@@ -178,7 +179,7 @@ servidor.get("/profile", verificarToken, async (peticion, respuesta) => {
 
     if (!usuario) {
       return respuesta.status(404).json({
-        error: "Usuario no encontrado",
+        error: mensaje(peticion, "usuarioNoEncontrado"),
       });
     }
 
@@ -189,7 +190,7 @@ servidor.get("/profile", verificarToken, async (peticion, respuesta) => {
   } catch (error) {
     console.error(error);
     respuesta.status(500).json({
-      error: "Error en el servidor",
+      error: mensaje(peticion, "errorServidor"),
     });
   }
 });
@@ -206,7 +207,7 @@ servidor.post("/reviews", verificarToken, async (peticion, respuesta) => {
     const { restaurantName, city, location, rating, dish } = peticion.body;
 
     if (!restaurantName || !restaurantName.trim() || !city || !city.trim() || !location || !location.trim() || rating === undefined || !dish || !dish.trim()) {
-      return respuesta.status(400).json({error: "Todos los campos son obligatorios", });
+      return respuesta.status(400).json({error: mensaje(peticion, "camposObligatorios"), });
     }
 
     const review = {
@@ -222,14 +223,14 @@ servidor.post("/reviews", verificarToken, async (peticion, respuesta) => {
     const id = await crearReview(review);
 
     respuesta.status(201).json({
-      message: "Reseña creada correctamente",
+      message: mensaje(peticion, "reviewCreada"),
       id,
     });
     
   } catch (error) {
     console.error(error);
     respuesta.status(500).json({
-      error: "Error en el servidor",
+      error: mensaje(peticion, "errorServidor"),
     });
   }
 });
@@ -254,7 +255,7 @@ servidor.get("/reviews", verificarToken, async (peticion, respuesta) => {
   } catch (error) {
     console.error(error);
     respuesta.status(500).json({
-      error: "Error en el servidor",
+      error: mensaje(peticion, "errorServidor"),
     });
   }
 });
@@ -274,7 +275,7 @@ servidor.delete("/reviews/:id", verificarToken, async (peticion, respuesta) => {
 
     if (!cantidadBorrada) {
       return respuesta.status(404).json({
-        error: "Reseña no encontrada",
+        error: mensaje(peticion, "reviewNoEncontrada"),
       });
     }
 
@@ -282,7 +283,7 @@ servidor.delete("/reviews/:id", verificarToken, async (peticion, respuesta) => {
   } catch (error) {
     console.error(error);
     respuesta.status(500).json({
-      error: "Error en el servidor",
+      error: mensaje(peticion, "errorServidor"),
     });
   }
 });
@@ -310,7 +311,7 @@ servidor.patch("/reviews/:id", verificarToken, async (peticion, respuesta) => {
       !dish.trim()
     ) {
       return respuesta.status(400).json({
-        error: "Todos los campos son obligatorios",
+        error: mensaje(peticion, "camposObligatorios"),
       });
     }
 
@@ -328,23 +329,23 @@ servidor.patch("/reviews/:id", verificarToken, async (peticion, respuesta) => {
 
     if (!resultado.existe) {
       return respuesta.status(404).json({
-        error: "Reseña no encontrada",
+        error: mensaje(peticion, "reviewNoEncontrada"),
       });
     }
 
     if (!resultado.cambio) {
       return respuesta.json({
-        message: "No se realizaron cambios",
+        message: mensaje(peticion, "sinCambios"),
       });
     }
 
     respuesta.json({
-      message: "Reseña actualizada correctamente",
+      message: mensaje(peticion, "reviewActualizada"),
     });
   } catch (error) {
     console.error(error);
     respuesta.status(500).json({
-      error: "Error en el servidor",
+      error: mensaje(peticion, "errorServidor"),
     });
   }
 });
@@ -363,7 +364,7 @@ servidor.get("/reviews/:id", verificarToken, async (peticion, respuesta) => {
 
     if (!review) {
       return respuesta.status(404).json({
-        error: "Reseña no encontrada",
+        error: mensaje(peticion, "reviewNoEncontrada"),
       });
     }
 
@@ -371,7 +372,7 @@ servidor.get("/reviews/:id", verificarToken, async (peticion, respuesta) => {
   } catch (error) {
     console.error(error);
     respuesta.status(500).json({
-      error: "Error en el servidor",
+      error: mensaje(peticion, "errorServidor"),
     });
   }
 });
@@ -388,7 +389,7 @@ servidor.patch("/profile", verificarToken, async (peticion, respuesta) => {
 
     if (!username || !username.trim() || !email || !email.trim()) {
       return respuesta.status(400).json({
-        error: "Usuario y email son obligatorios",
+        error: mensaje(peticion, "usuarioEmailObligatorios"),
       });
     }
 
@@ -398,7 +399,7 @@ servidor.patch("/profile", verificarToken, async (peticion, respuesta) => {
 
     if (!usuarioActual) {
       return respuesta.status(404).json({
-        error: "Usuario no encontrado",
+        error: mensaje(peticion, "usuarioNoEncontrado"),
       });
     }
 
@@ -408,7 +409,7 @@ servidor.patch("/profile", verificarToken, async (peticion, respuesta) => {
       String(usuarioConEseNombre._id) !== userId
     ) {
       return respuesta.status(409).json({
-        error: "Ese nombre de usuario ya existe",
+        error: mensaje(peticion, "usuarioExiste"),
       });
     }
 
@@ -418,7 +419,7 @@ servidor.patch("/profile", verificarToken, async (peticion, respuesta) => {
       String(usuarioConEseEmail._id) !== userId
     ) {
       return respuesta.status(409).json({
-        error: "Ese email ya está registrado",
+        error: mensaje(peticion, "emailExiste"),
       });
     }
 
@@ -429,17 +430,17 @@ servidor.patch("/profile", verificarToken, async (peticion, respuesta) => {
 
     if (!resultado.existe) {
       return respuesta.status(404).json({
-        error: "Usuario no encontrado",
+        error: mensaje(peticion, "usuarioNoEncontrado"),
       });
     }
 
     respuesta.json({
-      message: "Perfil actualizado correctamente",
+      message: mensaje(peticion, "perfilActualizado"),
     });
   } catch (error) {
     console.error(error);
     respuesta.status(500).json({
-      error: "Error en el servidor",
+      error: mensaje(peticion, "errorServidor"),
     });
   }
 });
@@ -461,7 +462,7 @@ servidor.patch("/profile/password", verificarToken, async (peticion, respuesta) 
       !newPassword.trim()
     ) {
       return respuesta.status(400).json({
-        error: "Todos los campos de contraseña son obligatorios",
+        error: mensaje(peticion, "camposPasswordObligatorios"),
       });
     }
 
@@ -471,7 +472,7 @@ servidor.patch("/profile/password", verificarToken, async (peticion, respuesta) 
 
     if (!usuarioActual) {
       return respuesta.status(404).json({
-        error: "Usuario no encontrado",
+        error: mensaje(peticion, "usuarioNoEncontrado"),
       });
     }
 
@@ -482,7 +483,7 @@ servidor.patch("/profile/password", verificarToken, async (peticion, respuesta) 
 
     if (!coincidePassword) {
       return respuesta.status(401).json({
-        error: "La contraseña actual no es correcta",
+        error: mensaje(peticion, "passwordActualIncorrecta"),
       });
     }
 
@@ -491,12 +492,12 @@ servidor.patch("/profile/password", verificarToken, async (peticion, respuesta) 
     await actualizarPasswordUsuario(userId, nuevaPasswordHash);
 
     respuesta.json({
-      message: "Contraseña actualizada correctamente",
+      message: mensaje(peticion, "passwordActualizada"),
     });
   } catch (error) {
     console.error(error);
     respuesta.status(500).json({
-      error: "Error en el servidor",
+      error: mensaje(peticion, "errorServidor"),
     });
   }
 });
@@ -518,7 +519,7 @@ servidor.get("/explore", verificarToken, async (peticion, respuesta) => {
   } catch (error) {
     console.error(error);
     respuesta.status(500).json({
-      error: "Error en el servidor",
+      error: mensaje(peticion, "errorServidor"),
     });
   }
 });
@@ -526,7 +527,7 @@ servidor.get("/explore", verificarToken, async (peticion, respuesta) => {
 
 servidor.get("/", (peticion, respuesta) => {
   respuesta.json({
-    message: "API funcionando correctamente",
+    message: mensaje(peticion, "apiFuncionando"),
   });
 });
 
@@ -539,7 +540,7 @@ servidor.get("/", (peticion, respuesta) => {
  */
 servidor.use((peticion, respuesta) => {
     respuesta.status(404).json({
-        error: "Recurso no encontrado",
+        error: mensaje(peticion, "recursoNoEncontrado"),
     });
 });
 

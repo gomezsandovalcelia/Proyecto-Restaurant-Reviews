@@ -9,7 +9,12 @@
  * - Edición de reseñas
  * - Borrado de reseñas
  * - Consulta de reseñas destacadas en la sección Explorar
+ *
+ * Cada petición envía el idioma elegido en la cabecera Accept-Language
+ * para que el servidor responda con los mensajes en ese idioma.
  */
+
+import { getStoredLanguage, translate } from "../i18n/translations";
 
 /**
  * URL base de la API del backend.
@@ -31,6 +36,7 @@ export async function createReview(reviewData) {
   const response = await fetch(`${API_URL}/reviews`, {
     method: "POST",
     headers: {
+      "Accept-Language": getStoredLanguage(),
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
@@ -40,7 +46,7 @@ export async function createReview(reviewData) {
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.error || "Error al crear la reseña");
+    throw new Error(data.error || translate(getStoredLanguage(), "errors.createReview"));
   }
 
   return data;
@@ -57,6 +63,7 @@ export async function getUserReviews(page = 1) {
 
   const response = await fetch(`${API_URL}/reviews?page=${page}`, {
     headers: {
+      "Accept-Language": getStoredLanguage(),
       Authorization: `Bearer ${token}`,
     },
   });
@@ -64,7 +71,7 @@ export async function getUserReviews(page = 1) {
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.error || "Error al obtener las reseñas");
+    throw new Error(data.error || translate(getStoredLanguage(), "errors.getReviews"));
   }
 
   return data;
@@ -82,6 +89,7 @@ export async function deleteReview(reviewId) {
   const response = await fetch(`${API_URL}/reviews/${reviewId}`, {
     method: "DELETE",
     headers: {
+      "Accept-Language": getStoredLanguage(),
       Authorization: `Bearer ${token}`,
     },
   });
@@ -95,7 +103,7 @@ export async function deleteReview(reviewId) {
       data = {};
     }
 
-    throw new Error(data.error || "Error al borrar la reseña");
+    throw new Error(data.error || translate(getStoredLanguage(), "errors.deleteReview"));
   }
 }
 
@@ -112,6 +120,7 @@ export async function updateReview(reviewId, reviewData) {
   const response = await fetch(`${API_URL}/reviews/${reviewId}`, {
     method: "PATCH",
     headers: {
+      "Accept-Language": getStoredLanguage(),
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
@@ -121,7 +130,7 @@ export async function updateReview(reviewId, reviewData) {
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.error || "Error al actualizar la reseña");
+    throw new Error(data.error || translate(getStoredLanguage(), "errors.updateReview"));
   }
 
   return data;
@@ -138,6 +147,7 @@ export async function getReviewById(reviewId) {
 
   const response = await fetch(`${API_URL}/reviews/${reviewId}`, {
     headers: {
+      "Accept-Language": getStoredLanguage(),
       Authorization: `Bearer ${token}`,
     },
   });
@@ -145,7 +155,7 @@ export async function getReviewById(reviewId) {
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.error || "Error al obtener la reseña");
+    throw new Error(data.error || translate(getStoredLanguage(), "errors.getReview"));
   }
 
   return data;
@@ -166,6 +176,7 @@ export async function getExploreReviews(city = "") {
 
   const response = await fetch(`${API_URL}/explore${query}`, {
     headers: {
+      "Accept-Language": getStoredLanguage(),
       Authorization: `Bearer ${token}`,
     },
   });
@@ -173,7 +184,7 @@ export async function getExploreReviews(city = "") {
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.error || "Error al obtener las reseñas de explorar");
+    throw new Error(data.error || translate(getStoredLanguage(), "errors.getExplore"));
   }
 
   return data;

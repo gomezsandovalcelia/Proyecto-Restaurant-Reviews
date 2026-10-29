@@ -8,7 +8,12 @@
  * - Obtención de los datos del perfil
  * - Actualización de los datos del perfil
  * - Cambio de contraseña
+ *
+ * Cada petición envía el idioma elegido en la cabecera Accept-Language
+ * para que el servidor responda con los mensajes en ese idioma.
  */
+
+import { getStoredLanguage, translate } from "../i18n/translations";
 
 /**
  * URL base de la API del backend.
@@ -28,6 +33,7 @@ export async function registerUser(userData) {
     const response = await fetch(`${API_URL}/register`, {
         method: "POST",
         headers: {
+            "Accept-Language": getStoredLanguage(),
             "Content-Type": "application/json",
         },
         body: JSON.stringify(userData),
@@ -36,7 +42,7 @@ export async function registerUser(userData) {
     const data = await response.json();
 
     if (!response.ok) {
-        throw new Error(data.error || "Error al registrar usuario");
+        throw new Error(data.error || translate(getStoredLanguage(), "errors.register"));
     }
 
     return data;
@@ -54,6 +60,7 @@ export async function loginUser(userData) {
     const response = await fetch(`${API_URL}/login`, {
         method: "POST",
         headers: {
+            "Accept-Language": getStoredLanguage(),
             "Content-Type": "application/json",
         },
         body: JSON.stringify(userData),
@@ -62,7 +69,7 @@ export async function loginUser(userData) {
     const data = await response.json();
 
     if (!response.ok) {
-        throw new Error(data.error || "Error al iniciar sesión");
+        throw new Error(data.error || translate(getStoredLanguage(), "errors.login"));
     }
 
     return data;
@@ -78,6 +85,7 @@ export async function getProfile() {
 
   const response = await fetch(`${API_URL}/profile`, {
     headers: {
+      "Accept-Language": getStoredLanguage(),
       Authorization: `Bearer ${token}`,
     },
   });
@@ -85,7 +93,7 @@ export async function getProfile() {
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.error || "Error al obtener el perfil");
+    throw new Error(data.error || translate(getStoredLanguage(), "errors.getProfile"));
   }
 
   return data;
@@ -103,6 +111,7 @@ export async function updateProfile(profileData) {
   const response = await fetch(`${API_URL}/profile`, {
     method: "PATCH",
     headers: {
+      "Accept-Language": getStoredLanguage(),
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
@@ -112,7 +121,7 @@ export async function updateProfile(profileData) {
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.error || "Error al actualizar el perfil");
+    throw new Error(data.error || translate(getStoredLanguage(), "errors.updateProfile"));
   }
 
   return data;
@@ -130,6 +139,7 @@ export async function updatePassword(passwordData) {
   const response = await fetch(`${API_URL}/profile/password`, {
     method: "PATCH",
     headers: {
+      "Accept-Language": getStoredLanguage(),
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
@@ -139,7 +149,7 @@ export async function updatePassword(passwordData) {
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.error || "Error al cambiar la contraseña");
+    throw new Error(data.error || translate(getStoredLanguage(), "errors.updatePassword"));
   }
 
   return data;

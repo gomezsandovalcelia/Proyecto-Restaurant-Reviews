@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { getReviewById, updateReview } from "../services/reviews";
 import spanishCities from "../data/spanishCities";
+import { useLanguage } from "../i18n/LanguageContext";
 
 /**
  * EditReview.jsx
@@ -30,6 +31,7 @@ import spanishCities from "../data/spanishCities";
 function EditReview() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const [formData, setFormData] = useState({
     restaurantName: "",
@@ -96,7 +98,7 @@ function EditReview() {
     const { restaurantName, city, location, rating, dish } = formData;
 
     if (!restaurantName || !city || !location || !rating || !dish) {
-      setError("Todos los campos son obligatorios");
+      setError(t("common.allFieldsRequired"));
       return;
     }
 
@@ -121,9 +123,9 @@ function EditReview() {
 
       <main className="container py-5">
         <div className="mb-4 text-center">
-          <h1 className="fw-bold userhome-title">Editar reseña</h1>
+          <h1 className="fw-bold userhome-title">{t("editReview.title")}</h1>
           <p className="userhome-subtitle mb-0">
-            Modifica los datos de tu reseña y guarda los cambios.
+            {t("editReview.subtitle")}
           </p>
         </div>
 
@@ -132,13 +134,13 @@ function EditReview() {
             <div className="card-body p-4 p-md-5">
               {loading ? (
                 <p className="text-center userhome-subtitle mb-0">
-                  Cargando reseña...
+                  {t("editReview.loading")}
                 </p>
               ) : (
                 <form onSubmit={handleSubmit}>
                   <div className="mb-3">
                     <label htmlFor="restaurantName" className="form-label">
-                      Nombre del restaurante
+                      {t("review.restaurantName")}
                     </label>
                     <input
                       type="text"
@@ -152,7 +154,7 @@ function EditReview() {
 
                   <div className="mb-3">
                     <label htmlFor="city" className="form-label">
-                      Ciudad
+                      {t("review.city")}
                     </label>
                     <select
                       id="city"
@@ -161,7 +163,7 @@ function EditReview() {
                       value={formData.city}
                       onChange={handleChange}
                     >
-                      <option value="">Selecciona una ciudad</option>
+                      <option value="">{t("review.selectCity")}</option>
                       {spanishCities.map((city) => (
                         <option key={city} value={city}>
                           {city}
@@ -172,7 +174,7 @@ function EditReview() {
 
                   <div className="mb-3">
                     <label htmlFor="location" className="form-label">
-                      Ubicación
+                      {t("review.location")}
                     </label>
                     <input
                       type="text"
@@ -186,7 +188,7 @@ function EditReview() {
 
                   <div className="mb-3">
                     <label htmlFor="rating" className="form-label">
-                      Nota
+                      {t("review.rating")}
                     </label>
                     <input
                       type="number"
@@ -202,7 +204,7 @@ function EditReview() {
 
                   <div className="mb-4">
                     <label htmlFor="dish" className="form-label">
-                      Plato que repetirías
+                      {t("review.dish")}
                     </label>
                     <input
                       type="text"
@@ -222,14 +224,14 @@ function EditReview() {
 
                   <div className="d-flex flex-column flex-sm-row gap-2">
                     <button type="submit" className="btn primary-btn">
-                      Guardar cambios
+                      {t("editReview.submit")}
                     </button>
                     <button
                       type="button"
                       className="btn secondary-btn"
                       onClick={() => navigate("/home")}
                     >
-                      Cancelar
+                      {t("common.cancel")}
                     </button>
                   </div>
                 </form>

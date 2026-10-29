@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import { getProfile } from "../services/auth";
 import { useNavigate } from "react-router-dom";
+import { useLanguage } from "../i18n/LanguageContext";
+import LanguageToggle from "../components/LanguageToggle";
 
 /**
  * Profile.jsx
@@ -22,6 +24,7 @@ import { useNavigate } from "react-router-dom";
 
 function Profile() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const [profile, setProfile] = useState({
     username: "",
@@ -55,9 +58,9 @@ function Profile() {
 
       <main className="container py-5">
         <div className="mb-4 text-center">
-          <h1 className="fw-bold userhome-title">Perfil</h1>
+          <h1 className="fw-bold userhome-title">{t("profile.title")}</h1>
           <p className="userhome-subtitle mb-0">
-            Aquí puedes ver la información de tu cuenta.
+            {t("profile.subtitle")}
           </p>
         </div>
 
@@ -66,27 +69,32 @@ function Profile() {
             <div className="card-body p-4 p-md-5">
               {loading ? (
                 <p className="text-center userhome-subtitle mb-0">
-                  Cargando perfil...
+                  {t("common.loadingProfile")}
                 </p>
               ) : error ? (
                 <div className="alert alert-danger mb-0">{error}</div>
               ) : (
                 <>
                   <div className="mb-4">
-                    <label className="form-label">Usuario</label>
+                    <label className="form-label">{t("common.username")}</label>
                     <div className="profile-value">{profile.username}</div>
                   </div>
 
                   <div className="mb-0">
-                    <label className="form-label">Email</label>
+                    <label className="form-label">{t("common.email")}</label>
                     <div className="profile-value">{profile.email}</div>
+                  </div>
+
+                  <div className="mt-4">
+                    <label className="form-label d-block">{t("profile.language")}</label>
+                    <LanguageToggle />
                   </div>
                   <div className="mt-4">
                   <button
                     className="btn primary-btn"
                     onClick={() => navigate("/edit-profile")}
                   >
-                    Editar perfil
+                    {t("profile.editProfile")}
                   </button>
                 </div>
                 </>

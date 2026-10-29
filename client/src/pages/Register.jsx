@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { registerUser } from "../services/auth";
+import LanguageToggle from "../components/LanguageToggle";
+import { useLanguage } from "../i18n/LanguageContext";
 
 /**
  * Register.jsx
@@ -25,6 +27,7 @@ function Register() {
 
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const { t } = useLanguage();
 
   /**
   * Actualiza el estado del formulario cada vez que el usuario
@@ -58,12 +61,12 @@ function Register() {
     const { username, email, password, confirmPassword } = formData;
 
     if (!username || !email || !password || !confirmPassword) {
-      setError("Todos los campos son obligatorios");
+      setError(t("common.allFieldsRequired"));
       return;
     }
 
     if (password !== confirmPassword) {
-      setError("Las contraseñas no coinciden");
+      setError(t("register.passwordsDontMatch"));
       return;
     }
 
@@ -74,7 +77,7 @@ function Register() {
         password,
       });
 
-      setMessage(data.message || "Usuario registrado correctamente");
+      setMessage(data.message || t("register.success"));
 
       setFormData({
         username: "",
@@ -98,6 +101,10 @@ function Register() {
           <div className="w-100 px-4" style={{ maxWidth: "440px" }}>
             <div className="card auth-card shadow border-0">
               <div className="card-body p-4 p-md-5">
+                <div className="d-flex justify-content-end mb-2">
+                  <LanguageToggle />
+                </div>
+
                 <div className="text-center mb-4">
                   <img
                     src="/images/logo.png"
@@ -105,21 +112,21 @@ function Register() {
                     className="auth-logo mb-3"
                   />
                   <p className="auth-subtitle mb-0">
-                    Crea tu cuenta para empezar
+                    {t("register.subtitle")}
                   </p>
                 </div>
 
                 <form onSubmit={handleSubmit}>
                   <div className="mb-3">
                     <label htmlFor="username" className="form-label auth-label">
-                      Nombre de usuario
+                      {t("register.username")}
                     </label>
                     <input
                       type="text"
                       className="form-control themed-input"
                       id="username"
                       name="username"
-                      placeholder="Introduce tu usuario"
+                      placeholder={t("common.usernamePlaceholder")}
                       value={formData.username}
                       onChange={handleChange}
                     />
@@ -127,14 +134,14 @@ function Register() {
 
                   <div className="mb-3">
                     <label htmlFor="email" className="form-label auth-label">
-                      Correo electrónico
+                      {t("register.email")}
                     </label>
                     <input
                       type="email"
                       className="form-control themed-input"
                       id="email"
                       name="email"
-                      placeholder="Introduce tu correo"
+                      placeholder={t("register.emailPlaceholder")}
                       value={formData.email}
                       onChange={handleChange}
                     />
@@ -142,14 +149,14 @@ function Register() {
 
                   <div className="mb-3">
                     <label htmlFor="password" className="form-label auth-label">
-                      Contraseña
+                      {t("common.password")}
                     </label>
                     <input
                       type="password"
                       className="form-control themed-input"
                       id="password"
                       name="password"
-                      placeholder="Introduce tu contraseña"
+                      placeholder={t("common.passwordPlaceholder")}
                       value={formData.password}
                       onChange={handleChange}
                     />
@@ -157,14 +164,14 @@ function Register() {
 
                   <div className="mb-4">
                     <label htmlFor="confirmPassword" className="form-label auth-label">
-                      Confirmar contraseña
+                      {t("register.confirmPassword")}
                     </label>
                     <input
                       type="password"
                       className="form-control themed-input"
                       id="confirmPassword"
                       name="confirmPassword"
-                      placeholder="Repite tu contraseña"
+                      placeholder={t("register.confirmPasswordPlaceholder")}
                       value={formData.confirmPassword}
                       onChange={handleChange}
                     />
@@ -183,14 +190,14 @@ function Register() {
                   )}
 
                   <button type="submit" className="btn primary-btn w-100 mb-3">
-                    Registrarse
+                    {t("register.submit")}
                   </button>
                 </form>
 
                 <div className="text-center">
-                  <p className="mb-2 auth-subtitle">¿Ya tienes cuenta?</p>
+                  <p className="mb-2 auth-subtitle">{t("register.haveAccount")}</p>
                   <Link to="/" className="btn secondary-btn w-100">
-                    Ir a login
+                    {t("register.goToLogin")}
                   </Link>
                 </div>
               </div>

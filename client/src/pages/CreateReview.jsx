@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { createReview } from "../services/reviews";
 import spanishCities from "../data/spanishCities";
+import { useLanguage } from "../i18n/LanguageContext";
 
 /**
  * CreateReview.jsx
@@ -26,6 +27,7 @@ import spanishCities from "../data/spanishCities";
 
 function CreateReview() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const [formData, setFormData] = useState({
     restaurantName: "",
@@ -65,7 +67,7 @@ function CreateReview() {
     const { restaurantName, city, location, rating, dish } = formData;
 
     if (!restaurantName || !city || !location || !rating || !dish) {
-      setError("Todos los campos son obligatorios");
+      setError(t("common.allFieldsRequired"));
       return;
     }
 
@@ -90,9 +92,9 @@ function CreateReview() {
 
       <main className="container py-5">
         <div className="mb-4 text-center">
-          <h1 className="fw-bold userhome-title">Crear reseña</h1>
+          <h1 className="fw-bold userhome-title">{t("createReview.title")}</h1>
           <p className="userhome-subtitle mb-0">
-            Añade un restaurante y guarda tu experiencia.
+            {t("createReview.subtitle")}
           </p>
         </div>
 
@@ -102,14 +104,14 @@ function CreateReview() {
               <form onSubmit={handleSubmit}>
                 <div className="mb-3">
                   <label htmlFor="restaurantName" className="form-label">
-                    Nombre del restaurante
+                    {t("review.restaurantName")}
                   </label>
                   <input
                     type="text"
                     id="restaurantName"
                     name="restaurantName"
                     className="form-control themed-input"
-                    placeholder="Ej. Goiko"
+                    placeholder={t("review.restaurantPlaceholder")}
                     value={formData.restaurantName}
                     onChange={handleChange}
                   />
@@ -117,7 +119,7 @@ function CreateReview() {
 
                 <div className="mb-3">
                   <label htmlFor="city" className="form-label">
-                    Ciudad
+                    {t("review.city")}
                   </label>
                   <select
                     id="city"
@@ -126,7 +128,7 @@ function CreateReview() {
                     value={formData.city}
                     onChange={handleChange}
                   >
-                    <option value="">Selecciona una ciudad</option>
+                    <option value="">{t("review.selectCity")}</option>
                     {spanishCities.map((city) => (
                       <option key={city} value={city}>
                         {city}
@@ -137,14 +139,14 @@ function CreateReview() {
 
                 <div className="mb-3">
                   <label htmlFor="location" className="form-label">
-                    Ubicación
+                    {t("review.location")}
                   </label>
                   <input
                     type="text"
                     id="location"
                     name="location"
                     className="form-control themed-input"
-                    placeholder="Ej. Murcia centro"
+                    placeholder={t("review.locationPlaceholder")}
                     value={formData.location}
                     onChange={handleChange}
                   />
@@ -152,7 +154,7 @@ function CreateReview() {
 
                 <div className="mb-3">
                   <label htmlFor="rating" className="form-label">
-                    Nota
+                    {t("review.rating")}
                   </label>
                   <input
                     type="number"
@@ -161,7 +163,7 @@ function CreateReview() {
                     className="form-control themed-input"
                     min="0"
                     max="10"
-                    placeholder="Ej. 8"
+                    placeholder={t("review.ratingPlaceholder")}
                     value={formData.rating}
                     onChange={handleChange}
                   />
@@ -169,14 +171,14 @@ function CreateReview() {
 
                 <div className="mb-4">
                   <label htmlFor="dish" className="form-label">
-                    Plato que repetirías
+                    {t("review.dish")}
                   </label>
                   <input
                     type="text"
                     id="dish"
                     name="dish"
                     className="form-control themed-input"
-                    placeholder="Ej. Raviolis de trufa"
+                    placeholder={t("review.dishPlaceholder")}
                     value={formData.dish}
                     onChange={handleChange}
                   />
@@ -190,14 +192,14 @@ function CreateReview() {
 
                 <div className="d-flex flex-column flex-sm-row gap-2">
                   <button type="submit" className="btn primary-btn">
-                    Guardar reseña
+                    {t("createReview.submit")}
                   </button>
                   <button
                     type="button"
                     className="btn secondary-btn"
                     onClick={() => navigate("/home")}
                   >
-                    Cancelar
+                    {t("common.cancel")}
                   </button>
                 </div>
               </form>

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import { getExploreReviews } from "../services/reviews";
 import spanishCities from "../data/spanishCities";
+import { useLanguage } from "../i18n/LanguageContext";
 
 /**
  * Explore.jsx
@@ -23,6 +24,7 @@ function Explore() {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const { t } = useLanguage();
 
   /**
    * Carga las reseñas destacadas de otros usuarios.
@@ -54,9 +56,9 @@ function Explore() {
 
       <main className="container py-5">
         <div className="mb-4 text-center">
-          <h1 className="fw-bold userhome-title">Explorar</h1>
+          <h1 className="fw-bold userhome-title">{t("explore.title")}</h1>
           <p className="userhome-subtitle mb-0">
-            Descubre las mejores reseñas de otros usuarios.
+            {t("explore.subtitle")}
           </p>
         </div>
 
@@ -64,7 +66,7 @@ function Explore() {
           <div className="card border-0 page-panel-card">
             <div className="card-body p-4">
               <label htmlFor="exploreCity" className="form-label">
-                Filtrar por ciudad
+                {t("explore.filterByCity")}
               </label>
 
               <select
@@ -73,7 +75,7 @@ function Explore() {
                 value={selectedCity}
                 onChange={(e) => setSelectedCity(e.target.value)}
               >
-                <option value="">Todas las ciudades</option>
+                <option value="">{t("explore.allCities")}</option>
                 {spanishCities.map((city) => (
                   <option key={city} value={city}>
                     {city}
@@ -85,17 +87,17 @@ function Explore() {
         </div>
 
         {loading ? (
-          <p className="text-center userhome-subtitle">Cargando reseñas...</p>
+          <p className="text-center userhome-subtitle">{t("common.loadingReviews")}</p>
         ) : error ? (
           <div className="alert alert-danger">{error}</div>
         ) : reviews.length === 0 ? (
           <div className="card border-0 shadow-sm empty-state-card userhome-empty-card">
             <div className="card-body p-4 p-md-5 text-center">
               <h2 className="h4 mb-3 userhome-title">
-                No hay reseñas para mostrar
+                {t("explore.emptyTitle")}
               </h2>
               <p className="userhome-subtitle mb-0">
-                Prueba con otra ciudad o espera a que otros usuarios publiquen reseñas.
+                {t("explore.emptyText")}
               </p>
             </div>
           </div>
@@ -110,19 +112,19 @@ function Explore() {
                     </h3>
 
                     <p className="review-card-location mb-1">
-                      <strong>Ciudad:</strong> {review.city || "Sin ciudad"}
+                      <strong>{t("review.city")}:</strong> {review.city || t("review.noCity")}
                     </p>
 
                     <p className="mb-2 review-card-text">
-                      <strong>Ubicación:</strong> {review.location}
+                      <strong>{t("review.location")}:</strong> {review.location}
                     </p>
 
                     <p className="mb-2 review-card-text">
-                      <strong>Nota:</strong> {review.rating}/10
+                      <strong>{t("review.rating")}:</strong> {review.rating}/10
                     </p>
 
                     <p className="mb-0 review-card-text">
-                      <strong>Plato recomendado:</strong> {review.dish}
+                      <strong>{t("review.recommendedDish")}:</strong> {review.dish}
                     </p>
                   </div>
                 </div>

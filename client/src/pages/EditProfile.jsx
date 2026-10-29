@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { getProfile, updateProfile, updatePassword } from "../services/auth";
+import { useLanguage } from "../i18n/LanguageContext";
 
 /**
  * EditProfile.jsx
@@ -23,6 +24,7 @@ import { getProfile, updateProfile, updatePassword } from "../services/auth";
 
 function EditProfile() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const [formData, setFormData] = useState({
     username: "",
@@ -101,13 +103,13 @@ function EditProfile() {
     const { username, email } = formData;
 
     if (!username || !email) {
-      setError("Todos los campos son obligatorios");
+      setError(t("common.allFieldsRequired"));
       return;
     }
 
     try {
       const data = await updateProfile({ username, email });
-      setMessage(data.message || "Perfil actualizado correctamente");
+      setMessage(data.message || t("editProfile.success"));
     } catch (err) {
       setError(err.message);
     }
@@ -130,12 +132,12 @@ function EditProfile() {
     const { currentPassword, newPassword, confirmNewPassword } = passwordData;
 
     if (!currentPassword || !newPassword || !confirmNewPassword) {
-      setPasswordError("Todos los campos de contraseña son obligatorios");
+      setPasswordError(t("editProfile.allPasswordFieldsRequired"));
       return;
     }
 
     if (newPassword !== confirmNewPassword) {
-      setPasswordError("Las nuevas contraseñas no coinciden");
+      setPasswordError(t("editProfile.passwordsDontMatch"));
       return;
     }
 
@@ -145,7 +147,7 @@ function EditProfile() {
         newPassword,
       });
 
-      setPasswordMessage(data.message || "Contraseña actualizada correctamente");
+      setPasswordMessage(data.message || t("editProfile.passwordSuccess"));
 
       setPasswordData({
         currentPassword: "",
@@ -163,9 +165,9 @@ function EditProfile() {
 
       <main className="container py-5">
         <div className="mb-4 text-center">
-          <h1 className="fw-bold userhome-title">Editar perfil</h1>
+          <h1 className="fw-bold userhome-title">{t("editProfile.title")}</h1>
           <p className="userhome-subtitle mb-0">
-            Modifica tu usuario, tu correo y tu contraseña.
+            {t("editProfile.subtitle")}
           </p>
         </div>
 
@@ -174,16 +176,16 @@ function EditProfile() {
             <div className="card-body p-4 p-md-5">
               {loading ? (
                 <p className="text-center userhome-subtitle mb-0">
-                  Cargando perfil...
+                  {t("common.loadingProfile")}
                 </p>
               ) : (
                 <>
                   <form onSubmit={handleSubmit} className="mb-5">
-                    <h2 className="h5 mb-4 userhome-title">Datos de la cuenta</h2>
+                    <h2 className="h5 mb-4 userhome-title">{t("editProfile.accountData")}</h2>
 
                     <div className="mb-3">
                       <label htmlFor="username" className="form-label">
-                        Usuario
+                        {t("common.username")}
                       </label>
                       <input
                         type="text"
@@ -197,7 +199,7 @@ function EditProfile() {
 
                     <div className="mb-4">
                       <label htmlFor="email" className="form-label">
-                        Email
+                        {t("common.email")}
                       </label>
                       <input
                         type="email"
@@ -223,14 +225,14 @@ function EditProfile() {
 
                     <div className="d-flex flex-column flex-sm-row gap-2">
                       <button type="submit" className="btn primary-btn">
-                        Guardar datos
+                        {t("editProfile.saveData")}
                       </button>
                       <button
                         type="button"
                         className="btn secondary-btn"
                         onClick={() => navigate("/profile")}
                       >
-                        Volver
+                        {t("editProfile.back")}
                       </button>
                     </div>
                   </form>
@@ -238,11 +240,11 @@ function EditProfile() {
                   <hr className="my-4" />
 
                   <form onSubmit={handlePasswordSubmit}>
-                    <h2 className="h5 mb-4 userhome-title">Cambiar contraseña</h2>
+                    <h2 className="h5 mb-4 userhome-title">{t("editProfile.changePassword")}</h2>
 
                     <div className="mb-3">
                       <label htmlFor="currentPassword" className="form-label">
-                        Contraseña actual
+                        {t("editProfile.currentPassword")}
                       </label>
                       <input
                         type="password"
@@ -256,7 +258,7 @@ function EditProfile() {
 
                     <div className="mb-3">
                       <label htmlFor="newPassword" className="form-label">
-                        Nueva contraseña
+                        {t("editProfile.newPassword")}
                       </label>
                       <input
                         type="password"
@@ -270,7 +272,7 @@ function EditProfile() {
 
                     <div className="mb-4">
                       <label htmlFor="confirmNewPassword" className="form-label">
-                        Confirmar nueva contraseña
+                        {t("editProfile.confirmNewPassword")}
                       </label>
                       <input
                         type="password"
@@ -295,7 +297,7 @@ function EditProfile() {
                     )}
 
                     <button type="submit" className="btn primary-btn">
-                      Cambiar contraseña
+                      {t("editProfile.changePassword")}
                     </button>
                   </form>
                 </>
